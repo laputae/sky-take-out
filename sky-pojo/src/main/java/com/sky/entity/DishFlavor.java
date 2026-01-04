@@ -1,5 +1,6 @@
 package com.sky.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel(description = "菜品口味")
 public class DishFlavor implements Serializable {
 
     private static final long serialVersionUID = 1L;

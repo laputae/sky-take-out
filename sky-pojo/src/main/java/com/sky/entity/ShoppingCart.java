@@ -1,5 +1,6 @@
 package com.sky.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel(description = "购物车")
 public class ShoppingCart implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,6 @@
 package com.sky.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel(description = "套餐")
 public class Setmeal implements Serializable {
 
     private static final long serialVersionUID = 1L;
