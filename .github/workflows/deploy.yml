@@ -1,23 +1,13 @@
-name: Deploy Sky-Takeout Docker
+name: Deploy Sky-Takeout (Fast Mode)
 
 on:
   push:
-    branches: [ "master" ] # 只有推送到 master 分支时才触发
-
-env:
-  # 镜像名称，格式为 ghcr.io/你的用户名/仓库名
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
+    branches: [ "master" ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    # 关键权限：允许 Actions 读写 GitHub 的软件包仓库
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      # --- 阶段一：构建 Jar 包 ---
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -29,54 +19,66 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        # 跳过测试以加快构建速度
+        # 跳过测试，加快打包速度
         run: mvn clean package -DskipTests
 
-      # --- 阶段二：构建并推送 Docker 镜像 ---
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      # === 核心步骤 1：把 Jar 包和 Dockerfile 传到服务器临时目录 ===
+      - name: Copy Jar and Dockerfile to Server
+        uses: appleboy/scp-action@master
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          # 只需要传这两个关键文件
+          source: "sky-server/target/*.jar,Dockerfile"
+          target: "/root/sky_temp_deploy"
+          # 保持目录结构，避免 Dockerfile 找不到路径
+          strip_components: 0
 
-      - name: Lowercase Image Name
-        run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE_NAME }}:latest
-
-      # --- 阶段三：远程连接服务器部署 ---
-      - name: Deploy to Huawei Cloud
+      # === 核心步骤 2：在服务器上构建并重启 ===
+      - name: Build and Restart Docker on Server
         uses: appleboy/ssh-action@master
         with:
-          host: 1.94.238.104
+          host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # 1. 登录镜像仓库 (确保服务器有权拉取)
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # 设置变量
+            APP_NAME="sky-takeout"
+            DEPLOY_DIR="/root/sky-deploy"
+            TEMP_DIR="/root/sky_temp_deploy"
             
-            # 2. 停止并移除旧容器 (如果有)
-            docker stop sky-takeout || true
-            docker rm sky-takeout || true
+            echo "1. 准备部署目录..."
+            # 为了配合你现有的 Dockerfile (COPY sky-server/target/*.jar)，我们需要还原目录结构
+            rm -rf $DEPLOY_DIR
+            mkdir -p $DEPLOY_DIR/sky-server/target
             
-            # 3. 强制拉取最新镜像
-            docker pull ${{ env.IMAGE_NAME }}:latest
+            # 移动文件到位
+            mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
+            mv $TEMP_DIR/sky-server/target/*.jar $DEPLOY_DIR/sky-server/target/app.jar
             
-            # 4. 启动新容器
-            # 如果你的 MySQL 在宿主机上，记得把数据库连接地址改为服务器内网/公网IP
+            # 清理临时上传目录
+            rm -rf $TEMP_DIR
+            
+            echo "2. 进入目录开始构建..."
+            cd $DEPLOY_DIR
+            
+            # 停止并删除旧容器 (如果存在)
+            docker stop $APP_NAME || true
+            docker rm $APP_NAME || true
+            
+            # 删除旧的镜像 (为了节省磁盘空间)
+            docker rmi $APP_NAME:local || true
+            
+            # 本地构建镜像 (这一步极快，因为基础镜像层有缓存)
+            docker build -t $APP_NAME:local .
+            
+            echo "3. 启动新容器..."
             docker run -d \
-              --name sky-takeout \
+              --name $APP_NAME \
               --restart always \
               -p 8080:8080 \
               -e TZ=Asia/Shanghai \
-              ${{ env.IMAGE_NAME }}:latest
+              $APP_NAME:local
             
-            # 5. 清理悬空镜像 (可选，清理旧版本产生的垃圾)
-            docker image prune -f
+            echo "部署完成！"
