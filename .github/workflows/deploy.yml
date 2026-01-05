@@ -38,42 +38,37 @@ jobs:
       # === 核心步骤 2：在服务器上构建并重启 ===
       - name: Build and Restart Docker on Server
         uses: appleboy/ssh-action@master
+        # 1. 在这里定义环境变量，把 GitHub Secrets 赋值给临时变量
+        env:
+          MY_DB_USER: ${{ secrets.DB_USERNAME }}
+          MY_DB_PASS: ${{ secrets.DB_PASSWORD }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          # 2. 告诉插件：请把这两个变量传送到华为云服务器里去！
+          envs: MY_DB_USER,MY_DB_PASS
           script: |
-            # 设置变量
             APP_NAME="sky-takeout"
             DEPLOY_DIR="/root/sky-deploy"
             TEMP_DIR="/root/sky_temp_deploy"
             
-            echo "1. 准备部署目录..."
-            # 为了配合你现有的 Dockerfile (COPY sky-server/target/*.jar)，我们需要还原目录结构
+            echo "--- 1. 整理文件结构 ---"
             rm -rf $DEPLOY_DIR
             mkdir -p $DEPLOY_DIR/sky-server/target
-            
-            # 移动文件到位
             mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
             mv $TEMP_DIR/sky-server/target/*.jar $DEPLOY_DIR/sky-server/target/app.jar
-            
-            # 清理临时上传目录
             rm -rf $TEMP_DIR
             
-            echo "2. 进入目录开始构建..."
+            echo "--- 2. 开始构建镜像 ---"
             cd $DEPLOY_DIR
-            
-            # 停止并删除旧容器 (如果存在)
             docker stop $APP_NAME || true
             docker rm $APP_NAME || true
-            
-            # 删除旧的镜像 (为了节省磁盘空间)
             docker rmi $APP_NAME:local || true
-            
-            # 本地构建镜像 (这一步极快，因为基础镜像层有缓存)
             docker build -t $APP_NAME:local .
             
-            echo "3. 启动新容器..."
+            echo "--- 3. 启动新容器 ---"
+            # 注意：下面引用变量时，要用 $MY_DB_USER 和 $MY_DB_PASS (这是我们在上面 envs 里传进来的)
             docker run -d \
               --name $APP_NAME \
               --restart always \
@@ -81,8 +76,8 @@ jobs:
               -e TZ=Asia/Shanghai \
               -e SPRING_DATASOURCE_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
               -e SPRING_DATASOURCE_DRUID_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
-              -e SPRING_DATASOURCE_USERNAME="root" \
-              -e SPRING_DATASOURCE_PASSWORD="Mp.20xcdgu" \
+              -e SPRING_DATASOURCE_USERNAME="$MY_DB_USER" \
+              -e SPRING_DATASOURCE_PASSWORD="$MY_DB_PASS" \
               $APP_NAME:local
             
-            echo "部署完成！"
+            echo "✅ 部署成功！"
