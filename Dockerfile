@@ -1,5 +1,5 @@
 # 1. 基础镜像：使用专门针对 Java 8 的轻量级 Alpine 镜像
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk-alpine
 
 # 2. 维护者信息
 LABEL maintainer="sky-takeout"
