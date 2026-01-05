@@ -81,6 +81,8 @@ jobs:
               -e TZ=Asia/Shanghai \
               -e SPRING_DATASOURCE_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
               -e SPRING_DATASOURCE_DRUID_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
+              -e SPRING_DATASOURCE_USERNAME="root" \
+              -e SPRING_DATASOURCE_PASSWORD="你的数据库密码" \
               $APP_NAME:local
             
             echo "部署完成！"
