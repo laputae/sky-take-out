@@ -40,6 +40,6 @@ public class GlobalExceptionHandler {
             String msg = split[2] + MessageConstant.ALREADY_EXISTS;
             return Result.error(msg);
         }
-        return Result.error("未知错误");
+        return Result.error(MessageConstant.UNKNOWN_ERROR);
     }
 }
