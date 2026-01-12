@@ -86,14 +86,19 @@ jobs:
       - name: 发送钉钉通知 (直观文字版)
         if: always()
         run: |
-          # 根据构建状态设置 emoji
+          # 1. 根据构建状态设置 emoji
           if [ "${{ job.status }}" == "success" ]; then
             STATUS_EMOJI="✅ 成功"
           else
             STATUS_EMOJI="❌ 失败"
           fi
           
-          curl '${{ secrets.DING_TOKEN }}' \
+          # 2. 拼接完整的钉钉 URL (手动补全 https 前缀)
+          # 注意：这里把 secrets.DING_TOKEN 拼在了 access_token= 后面
+          DING_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DING_TOKEN }}"
+          
+          # 3. 发送请求
+          curl "$DING_URL" \
             -H 'Content-Type: application/json' \
             -d "{
               \"msgtype\": \"markdown\",
