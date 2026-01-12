@@ -109,4 +109,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> records = page.getResult();
         return new PageResult(page.getTotal(),records);
     }
+
+    /**
+     * 启用或禁用员工账号
+     *
+     */
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        employeeMapper.updateStatus(id,status);
+    }
 }
