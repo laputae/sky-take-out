@@ -81,3 +81,21 @@ jobs:
               $APP_NAME:local
             
             echo "✅ 部署成功！"
+            # ... 上面是你已有的步骤，比如 mvn package ...
+
+      - name: 发送钉钉通知
+        if: always()  # 保证无论成功失败都发送
+        uses: zcong1993/actions-ding@v3.0.1
+        with:
+          # 这里引用刚才配置的 Secret
+          dingToken: ${{ secrets.DING_TOKEN }}
+          body: |
+            {
+              "msgtype": "link",
+              "link": {
+                "text": "构建结果: ${{ job.status }} \n分支: ${{ github.ref_name }}",
+                "title": "GitHub Action 构建通知",
+                "picUrl": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                "messageUrl": "https://github.com/${{ github.repository }}/actions"
+              }
+            }
