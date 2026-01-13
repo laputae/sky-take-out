@@ -86,13 +86,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         employee.setStatus(StatusConstant.ENABLE);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
         //设置默认密码123456，需要加密
         employee.setPassword(passwordEncoder.encode(PasswordConstant.DEFAULT_PASSWORD));
-        //TODO 后续需要设置创建人和修改人为当前登录用户的ID
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.insert(employee);
     }
 
@@ -116,6 +111,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void updateStatus(Long id, Integer status) {
-        employeeMapper.updateStatus(id,status);
+        Employee employee=Employee.builder().id(id).status(status).build();
+        employeeMapper.update(employee);
     }
 }
