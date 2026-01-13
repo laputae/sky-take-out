@@ -38,6 +38,7 @@ public class EmployeeController {
     // 注入 common 模块里的限流工具
     @Autowired
     private RateLimitUtil rateLimitUtil;
+
     /**
      * 登录
      *
@@ -79,7 +80,7 @@ public class EmployeeController {
     /**
      * 退出
      *
-     * @return
+     * @return string
      */
     @ApiOperation("退出")
     @PostMapping("/logout")
@@ -90,14 +91,13 @@ public class EmployeeController {
     /**
      * 新增员工
      *
-     * @param employeeDTO
+     * @param employeeDTO 员工数据查询对象
      * @return
      */
     @ApiOperation("新增员工")
     @PostMapping
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
-        System.out.println("当前线程的ID："+Thread.currentThread().getId());
-        log.info("新增员工：{}", employeeDTO);
+        log.info("新增员工: {}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
     }
@@ -105,14 +105,13 @@ public class EmployeeController {
     /**
      * 分页查询
      *
-     * @param employeePageQueryDTO
+     * @param employeePageQueryDTO 员工分页查询数据传输对象
      */
     @ApiOperation("分页查询")
     @GetMapping("/page")
-    public Result<PageResult> page( EmployeePageQueryDTO employeePageQueryDTO) {
-        log.info("分页查询，查询参数是：{}",employeePageQueryDTO);
-        PageResult pageResult=employeeService.pageQuery(employeePageQueryDTO);
-
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+        log.info("分页查询，查询参数是: {}", employeePageQueryDTO);
+        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
 
@@ -124,9 +123,36 @@ public class EmployeeController {
     @ApiOperation("启用或禁用员工账号")
     @PostMapping("/status/{status}")
     public Result updateStatus(@PathVariable Integer status, Long id) {
-        log.info("启用或禁用员工账号：{}，{}", status, id);
-        employeeService.updateStatus(id,status);
+        log.info("启用或禁用员工账号: {}, {}", status, id);
+        employeeService.updateStatus(id, status);
         return Result.success();
+    }
+
+    /**
+     * 编辑员工
+     *
+     * @param employeeDTO 员工数据传输对象
+     */
+    @ApiOperation("编辑员工信息")
+    @PutMapping
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("编辑的员工信息是: {}", employeeDTO);
+        employeeService.update(employeeDTO);
+        return Result.success();
+    }
+
+    /**
+     * 根据ID查询员工
+     *
+     * @param id 员工ID
+     */
+    @ApiOperation("根据ID查询员工")
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id) {
+        log.info("员工的ID是: {}",id);
+        Employee employee = employeeService.queryById(id);
+        employee.setPassword(null);
+        return Result.success(employee);
     }
 
 }

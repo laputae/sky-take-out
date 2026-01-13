@@ -101,6 +101,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
         Page<Employee> page=employeeMapper.pageQuery(employeePageQueryDTO);
         List<Employee> records = page.getResult();
+        //把返回password设为null
+        if (records != null && !records.isEmpty()) {
+            records.forEach(emp -> emp.setPassword(null));
+        }
         return new PageResult(page.getTotal(),records);
     }
 
@@ -112,5 +116,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateStatus(Long id, Integer status) {
         Employee employee=Employee.builder().id(id).status(status).build();
         employeeMapper.update(employee);
+    }
+
+    /**
+     * 编辑员工信息
+     *
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee=new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 跟据ID查询员工
+     *
+     */
+    @Override
+    public Employee queryById(Long id){
+        return employeeMapper.getById(id);
     }
 }
