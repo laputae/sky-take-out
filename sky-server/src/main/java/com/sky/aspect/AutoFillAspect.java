@@ -53,7 +53,8 @@ public class AutoFillAspect {
             setUpdateTime.invoke(entity, now);
             setUpdateUser.invoke(entity, currentId);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            log.error("公共字段自动填充失败：{}", e.getMessage());
+            throw new RuntimeException("公共字段自动填充失败，请检查实体类是否有 setCreateTime/Update 等方法", e);
         }
     }
 }
