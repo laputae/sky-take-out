@@ -6,3 +6,9 @@ sky:
     database: sky_take_out
     username: root
     password: Mp.20xcdgu
+
+  minio:
+    endpoint: http://1.94.238.104:9000
+    access-key: admin
+    secret-key: ggbondyingxiong
+    bucket-name: sky-take-out

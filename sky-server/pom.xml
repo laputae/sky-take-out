@@ -115,17 +115,21 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
-<!--   Argon算法     -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.78.1</version>
-            </dependency>
-
+        <!--   Argon算法     -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.78.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.7</version>
+        </dependency>
     </dependencies>
 
     <build>
