@@ -149,7 +149,7 @@ public class EmployeeController {
     @ApiOperation("根据ID查询员工")
     @GetMapping("/{id}")
     public Result<Employee> getById(@PathVariable Long id) {
-        log.info("员工的ID是: {}",id);
+        log.info("员工的ID是: {}", id);
         Employee employee = employeeService.queryById(id);
         employee.setPassword(null);
         return Result.success(employee);
