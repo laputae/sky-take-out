@@ -83,7 +83,7 @@ jobs:
             echo "✅ 部署成功！"
             # ... 上面是你已有的步骤，比如 mvn package ...
 
-      - name: 发送钉钉通知 (直观文字版)
+      - name: 发送钉钉通知 (带声音提醒版)
         if: always()
         run: |
           # 1. 根据构建状态设置 emoji
@@ -93,17 +93,19 @@ jobs:
             STATUS_EMOJI="❌ 失败"
           fi
           
-          # 2. 拼接完整的钉钉 URL (手动补全 https 前缀)
-          # 注意：这里把 secrets.DING_TOKEN 拼在了 access_token= 后面
+          # 2. 拼接完整的钉钉 URL
           DING_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DING_TOKEN }}"
           
-          # 3. 发送请求
+          # 3. 发送请求 (注意下面新增的 at 字段和 text 里的 @所有人)
           curl "$DING_URL" \
             -H 'Content-Type: application/json' \
             -d "{
               \"msgtype\": \"markdown\",
               \"markdown\": {
                 \"title\": \"GitHub Action 构建通知\",
-                \"text\": \"### 🚀 GitHub Action 构建通知\n\n**项目**: ${{ github.repository }}\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交信息**: ${{ github.event.head_commit.message }}\n\n[查看详细日志](https://github.com/${{ github.repository }}/actions)\"
+                \"text\": \"### 🚀 GitHub Action 构建通知\n\n**项目**: ${{ github.repository }}\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交信息**: ${{ github.event.head_commit.message }}\n\n[查看详细日志](https://github.com/${{ github.repository }}/actions)\n\n**@所有人**\"
+              },
+              \"at\": {
+                \"isAtAll\": true
               }
             }"
