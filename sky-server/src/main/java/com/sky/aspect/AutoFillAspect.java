@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Aspect
 public class AutoFillAspect {
 
-    @Pointcut("@annotation(com.sky.aspect.AutoFill)")
+    @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.aspect.AutoFill)")
     public void autoFillPointCut(){}
 
     @Before("autoFillPointCut()")
