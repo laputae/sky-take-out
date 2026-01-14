@@ -52,7 +52,7 @@ public class EmployeeController {
         String ip = request.getRemoteAddr();
         log.info("员工登录，IP: {}", ip);
         // 限流判断
-        // 如果这里返回 false，说明点太快了
+        // 如果这里返回 false，说明太快了
         if (!rateLimitUtil.tryAcquire(ip)) {
             log.warn("IP: {} 触发限流", ip);
             return Result.error("操作过于频繁，请稍后再试");

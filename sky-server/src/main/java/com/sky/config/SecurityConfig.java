@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 1. 定义 Argon2 加密器 (你之前可能写在别的地方，建议统一放这里)
+    // 1. 定义 Argon2 加密器
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Argon2PasswordEncoder(16, 32, 1, 4096, 3);
