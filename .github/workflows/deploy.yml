@@ -19,7 +19,6 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        # 跳过测试，加快打包速度
         run: mvn clean package -DskipTests
 
       # === 核心步骤 1：把 Jar 包和 Dockerfile 传到服务器临时目录 ===
@@ -29,16 +28,13 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          # 只需要传这两个关键文件
           source: "sky-server/target/*.jar,Dockerfile"
           target: "/root/sky_temp_deploy"
-          # 保持目录结构，避免 Dockerfile 找不到路径
           strip_components: 0
 
       # === 核心步骤 2：在服务器上构建并重启 ===
       - name: Build and Restart Docker on Server
         uses: appleboy/ssh-action@master
-        # 1. 在这里定义环境变量，把 GitHub Secrets 赋值给临时变量
         env:
           MY_DB_USER: ${{ secrets.DB_USERNAME }}
           MY_DB_PASS: ${{ secrets.DB_PASSWORD }}
@@ -46,7 +42,6 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          # 2. 告诉插件：请把这两个变量传送到华为云服务器里去！
           envs: MY_DB_USER,MY_DB_PASS
           script: |
             APP_NAME="sky-takeout"
@@ -68,11 +63,12 @@ jobs:
             docker build -t $APP_NAME:local .
             
             echo "--- 3. 启动新容器 ---"
-            # 注意：下面引用变量时，要用 $MY_DB_USER 和 $MY_DB_PASS (这是我们在上面 envs 里传进来的)
+            # 【注意】这里加入了 -v /dev/urandom:/dev/random 解决登录卡顿
             docker run -d \
               --name $APP_NAME \
               --restart always \
               -p 8080:8080 \
+              -v /dev/urandom:/dev/random \
               -e TZ=Asia/Shanghai \
               -e SPRING_DATASOURCE_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
               -e SPRING_DATASOURCE_DRUID_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
@@ -81,22 +77,17 @@ jobs:
               $APP_NAME:local
             
             echo "✅ 部署成功！"
-            # ... 上面是你已有的步骤，比如 mvn package ...
 
+      # === 钉钉通知部分保持不变 ===
       - name: 发送钉钉通知 (带声音提醒版)
         if: always()
         run: |
-          # 1. 根据构建状态设置 emoji
           if [ "${{ job.status }}" == "success" ]; then
             STATUS_EMOJI="✅ 成功"
           else
             STATUS_EMOJI="❌ 失败"
           fi
-          
-          # 2. 拼接完整的钉钉 URL
           DING_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DING_TOKEN }}"
-          
-          # 3. 发送请求 (注意下面新增的 at 字段和 text 里的 @所有人)
           curl "$DING_URL" \
             -H 'Content-Type: application/json' \
             -d "{
