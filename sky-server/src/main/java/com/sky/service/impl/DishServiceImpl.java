@@ -7,7 +7,6 @@ import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
-import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
@@ -60,8 +59,22 @@ public class DishServiceImpl implements DishService {
         if (setmealIds != null && !setmealIds.isEmpty()) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
-
         dishMapper.deleteBatch(ids);
         dishFlavorMapper.deleteBatch(ids);
+    }
+
+    public void updateStatus(Integer status, Long id){
+        Dish dish = Dish.builder().id(id).status(status).build();
+        dishMapper.update(dish);
+    }
+
+    public void updateDish(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+        dishMapper.update(dish);
+    }
+
+    public DishVO getByIdWithFlavor(Long id){
+        return dishMapper.queryByIdWithFlavor(id);
     }
 }

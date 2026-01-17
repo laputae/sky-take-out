@@ -2,7 +2,6 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.aspect.AutoFill;
-import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
@@ -64,4 +63,9 @@ public interface DishMapper {
      * @param ids
      */
     void deleteBatch(@Param("ids")List<Long> ids);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Dish dish);
+
+    DishVO queryByIdWithFlavor(Long id);
 }
