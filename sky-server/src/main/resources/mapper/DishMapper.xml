@@ -54,33 +54,4 @@
             where id=#{id}
         </set>
     </update>
-    <resultMap id="dishVoMap" type="com.sky.vo.DishVO">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="price" column="price"/>
-        <result property="image" column="image"/>
-        <result property="description" column="description"/>
-        <result property="status" column="status"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="categoryId" column="category_id"/>
-        <result property="categoryName" column="category_name"/>
-
-        <collection property="flavors" ofType="com.sky.entity.DishFlavor">
-            <id property="id" column="df_id"/>
-            <result property="name" column="df_name"/>
-            <result property="value" column="df_value"/>
-        </collection>
-    </resultMap>
-
-    <select id="queryByIdWithFlavor" resultMap="dishVoMap">
-        SELECT d.*,
-               c.name   AS category_name,
-               df.id    AS df_id,
-               df.name  AS df_name,
-               df.value AS df_value
-        FROM dish d
-                 LEFT JOIN category c ON d.category_id = c.id
-                 LEFT JOIN dish_flavor df ON d.id = df.dish_id
-        WHERE d.id = #{id}
-    </select>
 </mapper>

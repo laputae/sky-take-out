@@ -1,10 +1,7 @@
 package com.sky.mapper;
 
 import com.sky.entity.DishFlavor;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,11 +19,25 @@ public interface DishFlavorMapper {
      * @param dishId
      */
     @Delete("delete from dish_flavor where dish_id=#{dishId}")
-    void deleteByDishId(Long dishId);
+    void deleteFlavorByDishId(Long dishId);
 
     /**
      * 批量删除口味
      * @param ids
      */
     void deleteBatch(@Param("ids")List<Long> ids);
+
+    /**
+     * 给口味设置菜品id
+     * @param dishId
+     */
+    void setDishId(Long dishId);
+
+    /**
+     * 批量插入口味数据
+     * @param flavors 口味列表
+     */
+    void insertBatch(@Param("flavors") List<DishFlavor> flavors);
+    @Select("select * from dish_flavor where dish_id=#{dishId}")
+    List<DishFlavor> getByDishId(Long dishId);
 }

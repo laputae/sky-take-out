@@ -2,7 +2,6 @@ package com.sky.controller.admin;
 
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
-import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -33,7 +32,7 @@ public class DishController {
     @ApiOperation("新增菜品")
     public Result saveDish(@RequestBody DishDTO dishDTO){
         log.info("菜品信息: {}",dishDTO);
-        dishService.saveDish(dishDTO);
+        dishService.insertDishWithFlavor(dishDTO);
         return Result.success();
     }
     /**
@@ -65,9 +64,9 @@ public class DishController {
     }
     @PutMapping
     @Operation(summary = "修改菜品")
-    public Result update(@RequestBody DishDTO dishDTO){
+    public Result updateDishWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("修改的菜品是: {}",dishDTO);
-        dishService.updateDish(dishDTO);
+        dishService.updateDishWithFlavor(dishDTO);
         return Result.success();
     }
     @GetMapping("/{id}")

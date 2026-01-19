@@ -7,6 +7,7 @@ import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
+import com.sky.entity.DishFlavor;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
@@ -32,10 +33,19 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
 
     @Override
-    public void saveDish(DishDTO dishDTO) {
+    @Transactional
+    public void insertDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
-        dishMapper.save(dish);
+        dishMapper.insert(dish);
+        Long dishId = dish.getId();
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()) {
+            for (DishFlavor dishFlavor : flavors) {
+                dishFlavor.setDishId(dishId);
+            }
+            dishFlavorMapper.insertBatch(flavors);
+        }
     }
 
     @Override
@@ -63,18 +73,46 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteBatch(ids);
     }
 
-    public void updateStatus(Integer status, Long id){
+    public void updateStatus(Integer status, Long id) {
         Dish dish = Dish.builder().id(id).status(status).build();
         dishMapper.update(dish);
     }
 
-    public void updateDish(DishDTO dishDTO) {
+    public void updateDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO,dish);
+        BeanUtils.copyProperties(dishDTO, dish);
         dishMapper.update(dish);
+        dishFlavorMapper.deleteFlavorByDishId(dishDTO.getId());
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()) {
+            for (DishFlavor flavor : flavors) {
+                flavor.setDishId(dishDTO.getId());
+            }
+            dishFlavorMapper.insertBatch(flavors);
+        }
     }
 
-    public DishVO getByIdWithFlavor(Long id){
-        return dishMapper.queryByIdWithFlavor(id);
+    public DishVO getByIdWithFlavor(Long id) {
+        Dish dish = dishMapper.getById(id);
+        List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(flavors);
+        return dishVO;
+    }
+
+    @Transactional
+    public void saveWithFlavor(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.insert(dish);
+        Long dishId = dishDTO.getId();
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()) {
+            for (DishFlavor dishFlavor : flavors) {
+                dishFlavor.setDishId(dishId);
+            }
+            dishFlavorMapper.insertBatch(flavors);
+        }
     }
 }
