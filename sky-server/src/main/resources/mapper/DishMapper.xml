@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.DishMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dish (name, category_id, price, image, description, status, create_time, update_time, create_user,
+                          update_user)
+        VALUES (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{updateTime},
+                #{createUser}, #{updateUser})
+    </insert>
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select d.*,c.name as categoryName from dish d left outer join category c on d.category_id=c.id
         <where>
@@ -17,7 +23,7 @@
         </where>
         order by d.create_time desc
     </select>
-    <delete id="deleteBatch">
+    <delete id="deleteBatchById">
         DELETE FROM dish
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 
@@ -61,7 +62,7 @@ public class DishServiceImpl implements DishService {
         Dish dish;
         for (Long id : ids) {
             dish = dishMapper.queryById(id);
-            if (dish.getStatus() == StatusConstant.ENABLE) {
+            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
         }
@@ -69,8 +70,8 @@ public class DishServiceImpl implements DishService {
         if (setmealIds != null && !setmealIds.isEmpty()) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
-        dishMapper.deleteBatch(ids);
-        dishFlavorMapper.deleteBatch(ids);
+        dishMapper.deleteBatchById(ids);
+        dishFlavorMapper.deleteBatchByDishId(ids);
     }
 
     @Override
@@ -102,21 +103,6 @@ public class DishServiceImpl implements DishService {
         BeanUtils.copyProperties(dish, dishVO);
         dishVO.setFlavors(flavors);
         return dishVO;
-    }
-
-    @Transactional
-    public void saveWithFlavor(DishDTO dishDTO) {
-        Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
-        dishMapper.insert(dish);
-        Long dishId = dishDTO.getId();
-        List<DishFlavor> flavors = dishDTO.getFlavors();
-        if (flavors != null && !flavors.isEmpty()) {
-            for (DishFlavor dishFlavor : flavors) {
-                dishFlavor.setDishId(dishId);
-            }
-            dishFlavorMapper.insertBatch(flavors);
-        }
     }
 
     @Override
