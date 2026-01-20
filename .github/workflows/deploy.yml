@@ -62,18 +62,15 @@ jobs:
             docker rmi $APP_NAME:local || true
             docker build -t $APP_NAME:local .
             
-            echo "--- 3. 启动新容器 ---"
-            # 【注意】这里加入了 -v /dev/urandom:/dev/random 解决登录卡顿
+            echo "--- 3. 启动新容器 (Host模式 + Prod环境) ---"
             docker run -d \
               --name $APP_NAME \
               --restart always \
-              -p 8080:8080 \
+              --network host \
               -v /dev/urandom:/dev/random \
               -e TZ=Asia/Shanghai \
-              -e SPRING_DATASOURCE_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
-              -e SPRING_DATASOURCE_DRUID_URL="jdbc:mysql://172.17.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true" \
-              -e SPRING_DATASOURCE_USERNAME="$MY_DB_USER" \
-              -e SPRING_DATASOURCE_PASSWORD="$MY_DB_PASS" \
+              -e "SPRING_PROFILES_ACTIVE=prod" \
+              -e "MY_DB_PASS=$MY_DB_PASS" \
               $APP_NAME:local
             
             echo "✅ 部署成功！"
