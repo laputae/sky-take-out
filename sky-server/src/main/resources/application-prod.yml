@@ -1,18 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: ${MY_REDIS_PASS}  # <--- 这里引用 Redis 专用密码
+      database: 0
+
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # 服务器上部署，Host模式下，直接填本地回环，速度最快
     host: 127.0.0.1
     port: 3306
     database: sky_take_out
-    # 这里可以使用环境变量引用，或者直接写服务器上的固定账号（如果不敏感）
     username: root
-    # 如果不想明文写密码，可以保持这里为空，继续用 deploy.yml 里的环境变量注入
-    password: ${MY_DB_PASS}
-
+    password: ${MY_DB_PASS}     # <--- 这里引用 数据库 专用密码
   minio:
-    # 注意：MinIO 如果是给前端返回图片链接，必须填公网 IP 或域名
-    # 如果填 127.0.0.1，前端浏览器会无法访问图片
     endpoint: http://1.94.238.104:9000
     access-key: admin
     secret-key: ggbondyingxiong
