@@ -1,7 +1,9 @@
 package com.sky.controller.admin;
 
+import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -63,16 +65,22 @@ public class DishController {
         return Result.success();
     }
     @PutMapping
-    @Operation(summary = "修改菜品")
+    @Operation(summary = "修改菜品和菜品的口味")
     public Result updateDishWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("修改的菜品是: {}",dishDTO);
         dishService.updateDishWithFlavor(dishDTO);
         return Result.success();
     }
     @GetMapping("/{id}")
-    @Operation(tags="根据id查询菜品",description = "可用于修改菜品时的回显")
+    @Operation(summary="根据id查询菜品和菜品口味",description = "可用于修改菜品时的回显")
     public Result<DishVO> getDishById(@PathVariable Long id){
         log.info("查询的菜品id是: {}",id);
         return Result.success(dishService.getByIdWithFlavor(id));
+    }
+    @GetMapping("/list")
+    @Operation(summary="根据分类id查询菜品")
+    public Result<List<Dish>> getByCategoryId(Long categoryId){
+        log.info("分类id是: {}", categoryId);
+        return Result.success(dishService.getByCategoryId(categoryId));
     }
 }

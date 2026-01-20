@@ -73,11 +73,13 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteBatch(ids);
     }
 
+    @Override
     public void updateStatus(Integer status, Long id) {
         Dish dish = Dish.builder().id(id).status(status).build();
         dishMapper.update(dish);
     }
 
+    @Override
     public void updateDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
@@ -92,6 +94,7 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+    @Override
     public DishVO getByIdWithFlavor(Long id) {
         Dish dish = dishMapper.getById(id);
         List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
@@ -114,5 +117,10 @@ public class DishServiceImpl implements DishService {
             }
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    @Override
+    public List<Dish> getByCategoryId(Long categoryId){
+        return dishMapper.getByCategoryId(categoryId);
     }
 }
