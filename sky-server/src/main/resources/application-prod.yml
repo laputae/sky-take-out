@@ -1,24 +1,19 @@
-server:
-  port: 8080
-
 spring:
-  data:
-    redis:
-      host: 127.0.0.1
-      port: 6379
-      password: ${MY_REDIS_PASS}  # <--- 这里引用 Redis 专用密码
-      database: 0
+  datasource:
+    druid:
+      # 生产环境可能不需要 allowPublicKeyRetrieval=true，或者参数不同，分开写更灵活
+      url: jdbc:mysql://127.0.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      username: ${MY_DB_USER}
+      password: ${MY_DB_PASS}
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: ${MY_REDIS_PASS}
+    database: 0
 
 sky:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    host: 127.0.0.1
-    port: 3306
-    database: sky_take_out
-    username: root
-    password: ${MY_DB_PASS}     # <--- 这里引用 数据库 专用密码
   minio:
-    endpoint: http://1.94.238.104:9000
+    endpoint: http://1.94.238.104:9000 # 生产环境必须是公网IP/域名
     access-key: admin
     secret-key: ggbondyingxiong
     bucket-name: sky-take-out

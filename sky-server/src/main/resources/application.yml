@@ -6,38 +6,34 @@ spring:
     active: dev
   main:
     allow-circular-references: true
+  # 这里只保留 Druid 的通用设置，不要写 url/username/password
   datasource:
     druid:
-      driver-class-name: ${sky.datasource.driver-class-name}
-      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: ${sky.datasource.username}
-      password: ${sky.datasource.password}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      # 下面这些连接池的通用设置可以放这里
+      initial-size: 5
+      max-active: 20
+      min-idle: 5
+      max-wait: 60000
   servlet:
     multipart:
       enabled: true
       max-file-size: 5MB
       max-request-size: 10MB
+
 mybatis:
-  #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
-    #开启驼峰命名
     map-underscore-to-camel-case: true
 
 logging:
   level:
-    com:
-      sky:
-        mapper: debug
-        service: info
-        controller: info
+    com.sky: info
 
+# 纯业务配置保留在 sky 下
 sky:
   jwt:
-    # 设置jwt签名加密时使用的秘钥
     admin-secret-key: itcast
-    # 设置jwt过期时间
     admin-ttl: 7200000
-    # 设置前端传递过来的令牌名称
     admin-token-name: token

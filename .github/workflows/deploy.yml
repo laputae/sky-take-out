@@ -21,7 +21,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      # === 核心步骤 1：把 Jar 包和 Dockerfile 传到服务器临时目录 ===
+      # 1. 传输文件
       - name: Copy Jar and Dockerfile to Server
         uses: appleboy/scp-action@master
         with:
@@ -32,8 +32,9 @@ jobs:
           target: "/root/sky_temp_deploy"
           strip_components: 0
 
-      # === 核心步骤 2：在服务器上构建并重启 ===
+      # 2. 远程构建 (遇到错误会立即中断)
       - name: Build and Restart Docker on Server
+        id: build-step  # 给步骤个ID，方便后续引用（虽然这里主要靠 job.status）
         uses: appleboy/ssh-action@master
         env:
           MY_DB_USER: ${{ secrets.DB_USERNAME }}
@@ -44,7 +45,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           envs: MY_DB_USER,MY_DB_PASS,MY_REDIS_PASS
+          # 设置超时时间，防止网络卡死导致的无限等待
+          command_timeout: 30m
           script: |
+            # ▼▼▼ 核心：一旦任何命令出错（如构建失败），立即停止脚本并报错 ▼▼▼
+            set -e
+
             APP_NAME="sky-takeout"
             DEPLOY_DIR="/root/sky-deploy"
             TEMP_DIR="/root/sky_temp_deploy"
@@ -58,12 +64,17 @@ jobs:
             
             echo "--- 2. 开始构建镜像 ---"
             cd $DEPLOY_DIR
+            
+            # 清理旧容器（加 || true 防止因容器不存在而报错停止）
             docker stop $APP_NAME || true
             docker rm $APP_NAME || true
             docker rmi $APP_NAME:local || true
+            
+            # 构建镜像 (如果不成功，set -e 会让脚本在这里直接退出，触发 Failure 状态)
+            # 这里去掉了 sed 命令，直接使用你服务器配置好的镜像源
             docker build -t $APP_NAME:local .
             
-            echo "--- 3. 启动新容器 (Host模式 + Prod环境) ---"
+            echo "--- 3. 启动新容器 ---"
             docker run -d \
               --name $APP_NAME \
               --restart always \
@@ -75,25 +86,31 @@ jobs:
               -e "MY_REDIS_PASS=$MY_REDIS_PASS" \
               $APP_NAME:local
             
-            echo "✅ 部署成功！"
+            echo "✅ 部署脚本执行完毕"
 
-      # === 钉钉通知部分保持不变 ===
-      - name: 发送钉钉通知 (带声音提醒版)
-        if: always()
+      # 3. 钉钉通知 (无论成功还是失败都会发送)
+      - name: 发送钉钉通知
+        if: always()  # <--- 重要：确保即使上面步骤失败了，这一步也会执行
         run: |
+          # 根据任务状态判断发送什么表情和文字
           if [ "${{ job.status }}" == "success" ]; then
-            STATUS_EMOJI="✅ 成功"
+            STATUS_EMOJI="✅ 构建成功"
+            COLOR_CODE="#00FF00" # 绿色看起来心情好
           else
-            STATUS_EMOJI="❌ 失败"
+            STATUS_EMOJI="❌ 构建失败 (请检查日志)"
+            COLOR_CODE="#FF0000" # 红色警示
           fi
+          
           DING_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DING_TOKEN }}"
+          
+          # 发送 Markdown 消息
           curl "$DING_URL" \
             -H 'Content-Type: application/json' \
             -d "{
               \"msgtype\": \"markdown\",
               \"markdown\": {
-                \"title\": \"GitHub Action 构建通知\",
-                \"text\": \"### 🚀 GitHub Action 构建通知\n\n**项目**: ${{ github.repository }}\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交信息**: ${{ github.event.head_commit.message }}\n\n[查看详细日志](https://github.com/${{ github.repository }}/actions)\n\n**@所有人**\"
+                \"title\": \"GitHub Action 通知\",
+                \"text\": \"### 🚀 Sky-Takeout 部署通知\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.event.head_commit.message }}\n\n[🔍 点击查看详细日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n**@所有人**\"
               },
               \"at\": {
                 \"isAtAll\": true
