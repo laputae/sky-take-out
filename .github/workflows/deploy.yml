@@ -82,6 +82,7 @@ jobs:
               -v /dev/urandom:/dev/random \
               -e TZ=Asia/Shanghai \
               -e "SPRING_PROFILES_ACTIVE=prod" \
+              -e "MY_DB_USER=$MY_DB_USER" \
               -e "MY_DB_PASS=$MY_DB_PASS" \
               -e "MY_REDIS_PASS=$MY_REDIS_PASS" \
               $APP_NAME:local
