@@ -44,10 +44,11 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 通过knife4j生成接口文档
+     *
      * @return
      */
     @Bean
-    public Docket docket() {
+    public Docket docket1() {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("苍穹外卖项目接口文档")
                 .version("2.0")
@@ -56,7 +57,28 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
+                .paths(PathSelectors.any())
+                .build();
+        return docket;
+    }
+
+    /**
+     * 通过knife4j生成接口文档
+     *
+     * @return
+     */
+    @Bean
+    public Docket docket2() {
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("苍穹外卖项目接口文档")
+                .version("2.0")
+                .description("苍穹外卖项目接口文档")
+                .build();
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
                 .paths(PathSelectors.any())
                 .build();
         return docket;
@@ -64,20 +86,23 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 设置静态资源映射
+     *
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+
     /**
      * 扩展mvc框架的消息转换器
+     *
      * @param converters
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("开示扩展消息转换器...");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(new JacksonObjectMapper());
-        converters.add(0,converter);
+        converters.add(0, converter);
     }
 }
