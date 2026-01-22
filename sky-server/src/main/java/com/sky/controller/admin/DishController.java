@@ -1,6 +1,5 @@
 package com.sky.controller.admin;
 
-import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -10,7 +9,6 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,34 +49,34 @@ public class DishController {
     }
 
     @DeleteMapping
-    @Operation(summary="批量删除菜品")
+    @ApiOperation("批量删除菜品")
     public Result delete(@RequestParam List<Long> ids){
         log.info("删除的菜品的ID: {}",ids);
         dishService.deleteBatch(ids);
         return Result.success();
     }
     @PostMapping("/status/{status}")
-    @Operation(summary="菜品起售停售")
+    @ApiOperation("菜品起售停售")
     public Result updateStatus(@PathVariable Integer status,@RequestParam Long id){
         log.info("菜品的状态是: {}, id是: {}",status,id);
         dishService.updateStatus(status, id);
         return Result.success();
     }
     @PutMapping
-    @Operation(summary = "修改菜品和菜品的口味")
+    @ApiOperation("修改菜品和菜品的口味")
     public Result updateDishWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("修改的菜品是: {}",dishDTO);
         dishService.updateDishWithFlavor(dishDTO);
         return Result.success();
     }
     @GetMapping("/{id}")
-    @Operation(summary="根据id查询菜品和菜品口味",description = "可用于修改菜品时的回显")
+    @ApiOperation("根据id查询菜品和菜品口味,用于修改菜品时的回显")
     public Result<DishVO> getDishById(@PathVariable Long id){
         log.info("查询的菜品id是: {}",id);
         return Result.success(dishService.getByIdWithFlavor(id));
     }
     @GetMapping("/list")
-    @Operation(summary="根据分类id查询菜品")
+    @ApiOperation("根据分类id查询菜品")
     public Result<List<Dish>> getByCategoryId(Long categoryId){
         log.info("分类id是: {}", categoryId);
         return Result.success(dishService.getByCategoryId(categoryId));
