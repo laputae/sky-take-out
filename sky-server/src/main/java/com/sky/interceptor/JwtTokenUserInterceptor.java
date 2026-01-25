@@ -18,7 +18,7 @@ import io.jsonwebtoken.ExpiredJwtException;
  */
 @Component
 @Slf4j
-public class JwtTokenAdminInterceptor implements HandlerInterceptor {
+public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtProperties jwtProperties;
@@ -44,7 +44,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
             BaseContext.setCurrentId(empId);
-            log.info("当前员工id: {}", empId);
+            log.info("当前用户id: {}", empId);
             return true;
         } catch (ExpiredJwtException ex) {
             // 专门处理 Token 过期的情况
