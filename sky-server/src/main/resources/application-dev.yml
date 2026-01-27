@@ -1,22 +1,3 @@
-#sky:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    host: 1.94.238.104
-#    port: 3306
-#    database: sky_take_out
-#    username: root
-#    password: +s6CCmAiDGcJpk3W
-#  redis:
-#    host: 1.94.238.104  # 你的服务器公网IP
-#    port: 6379
-#    password: mdaxXVQzMhGKWXQV # 刚才设置的那个复杂密码
-#    database: 0
-#  minio:
-#    endpoint: http://1.94.238.104:9000
-#    access-key: admin
-#    secret-key: ggbondyingxiong
-#    bucket-name: sky-take-out
-
 spring:
   datasource:
     druid:
@@ -29,7 +10,6 @@ spring:
     port: 6379
     password: mdaxXVQzMhGKWXQV
     database: 0
-
 # 自定义业务配置
 sky:
   minio:
