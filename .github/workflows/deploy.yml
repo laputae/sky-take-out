@@ -85,7 +85,7 @@ jobs:
               -v /root/sky-logs:/tmp/sky-logs" \
               -e TZ=Asia/Shanghai \
               -e "SPRING_PROFILES_ACTIVE=prod" \
-              -e "logging.file.path=/tmp/sky-logs"
+              -e "logging.file.path=/tmp/sky-logs" \
               -e "MY_DB_USER=$MY_DB_USER" \
               -e "MY_DB_PASS=$MY_DB_PASS" \
               -e "MY_REDIS_PASS=$MY_REDIS_PASS" \
