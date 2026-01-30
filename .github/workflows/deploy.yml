@@ -1,4 +1,4 @@
-name: Deploy Sky-Takeout (Fast Mode)
+name: Deploy sky-take-out (Fast Mode)
 
 on:
   push:
@@ -53,7 +53,7 @@ jobs:
             # ▼▼▼ 核心：一旦任何命令出错（如构建失败），立即停止脚本并报错 ▼▼▼
             set -e
 
-            APP_NAME="sky-takeout"
+            APP_NAME="sky-take-out"
             DEPLOY_DIR="/root/sky-deploy"
             TEMP_DIR="/root/sky_temp_deploy"
             
@@ -82,8 +82,10 @@ jobs:
               --restart always \
               --network host \
               -v /dev/urandom:/dev/random \
+              -v /root/sky-logs:/tmp/sky-logs"  
               -e TZ=Asia/Shanghai \
               -e "SPRING_PROFILES_ACTIVE=prod" \
+              -e "logging.file.path=/tmp/sky-logs"
               -e "MY_DB_USER=$MY_DB_USER" \
               -e "MY_DB_PASS=$MY_DB_PASS" \
               -e "MY_REDIS_PASS=$MY_REDIS_PASS" \
@@ -115,7 +117,7 @@ jobs:
               \"msgtype\": \"markdown\",
               \"markdown\": {
                 \"title\": \"GitHub Action 通知\",
-                \"text\": \"### 🚀 Sky-Takeout 部署通知\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.event.head_commit.message }}\n\n[🔍 点击查看详细日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n**@所有人**\"
+                \"text\": \"### sky-take-out 部署通知\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.event.head_commit.message }}\n\n[🔍 点击查看详细日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n**@所有人**\"
               },
               \"at\": {
                 \"isAtAll\": true

@@ -37,14 +37,14 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = request.getHeader(jwtProperties.getAdminTokenName());
+        String token = request.getHeader(jwtProperties.getUserTokenName());
 
         try {
             log.info("jwt校验: {}", token);
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            BaseContext.setCurrentId(empId);
-            log.info("当前用户id: {}", empId);
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
+            Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            BaseContext.setCurrentId(userId);
+            log.info("当前用户id: {}", userId);
             return true;
         } catch (ExpiredJwtException ex) {
             // 专门处理 Token 过期的情况
