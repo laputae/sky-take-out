@@ -17,3 +17,6 @@ sky:
     access-key: admin
     secret-key: ggbondyingxiong
     bucket-name: sky-take-out
+  wechat:
+    appid: wx7d9d0bcad4d65d26
+    secret: e5f3cca0f190f8ef952e8e23c953ea19
