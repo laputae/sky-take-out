@@ -82,7 +82,7 @@ jobs:
               --restart always \
               --network host \
               -v /dev/urandom:/dev/random \
-              -v /root/sky-logs:/tmp/sky-logs"  
+              -v /root/sky-logs:/tmp/sky-logs" \
               -e TZ=Asia/Shanghai \
               -e "SPRING_PROFILES_ACTIVE=prod" \
               -e "logging.file.path=/tmp/sky-logs"
