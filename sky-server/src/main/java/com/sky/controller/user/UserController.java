@@ -25,4 +25,5 @@ public class UserController {
         UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
         return Result.success(userLoginVO);
     }
+
 }
