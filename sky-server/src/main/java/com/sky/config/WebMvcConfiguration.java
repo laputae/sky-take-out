@@ -111,7 +111,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * @param converters
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        log.info("开示扩展消息转换器...");
+        log.info("开启扩展消息转换器...");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(new JacksonObjectMapper());
         converters.add(0, converter);
