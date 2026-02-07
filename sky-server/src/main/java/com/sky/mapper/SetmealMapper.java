@@ -60,4 +60,12 @@ public interface SetmealMapper {
      * @return
      */
     Page<SetmealVO> page(SetmealPageQueryDTO dto);
+
+    /**
+     * 根据套餐id查询套餐
+     * @param id
+     * @return
+     */
+    @Select("select * from setmeal")
+    SetmealVO getById(Long id);
 }

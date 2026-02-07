@@ -36,6 +36,8 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealDishMapper setmealDishMapper;
     @Autowired
     private DishMapper dishMapper;
+    @Autowired
+    private SetmealService setmealService;
 
     /**
      * 条件查询
@@ -115,5 +117,19 @@ public class SetmealServiceImpl implements SetmealService {
             setmealVO.setSetmealDishes(setmealDishes);
         }
         return new PageResult(pageResult.getTotal(), pageResult.getResult());
+    }
+
+    /**
+     * 根据套餐id查寻套餐
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealVO getById(Long id){
+        SetmealVO setmealVO=setmealMapper.getById(id);
+        List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealDishById(id);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
     }
 }
