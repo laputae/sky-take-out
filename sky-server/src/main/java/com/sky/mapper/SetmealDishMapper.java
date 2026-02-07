@@ -28,4 +28,11 @@ public interface SetmealDishMapper {
      * @return
      */
     int insertBatch(List<SetmealDish> setmealDishes);
+
+    /**
+     * 根据套餐id获取套餐的菜品
+     * @param id
+     * @return
+     */
+    List<SetmealDish> getSetmealDishById(Long id);
 }

@@ -37,4 +37,10 @@ public interface SetmealService {
      */
      void insert(SetmealDTO setmealDTO);
 
+    /**
+     * 分页查询套餐
+     * @param dto
+     * @return
+     */
+    PageResult page(SetmealPageQueryDTO dto);
 }

@@ -33,4 +33,8 @@
             #{setmealDish.copies})
         </foreach>
     </insert>
+    <select id="getSetmealDishById" parameterType="java.lang.Long" resultType="com.sky.entity.SetmealDish">
+        select sd.* from setmeal, setmeal_dish as sd
+        where setmeal.id=sd.setmeal_id and sd.setmeal_id=#{id}
+    </select>
 </mapper>
