@@ -20,11 +20,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Transactional
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -85,7 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         employee.setStatus(StatusConstant.ENABLE);
-        //设置默认密码123456，需要加密
+        //设置默认密码ggbondyingxiong，需要加密
         employee.setPassword(passwordEncoder.encode(PasswordConstant.DEFAULT_PASSWORD));
         employeeMapper.insert(employee);
     }

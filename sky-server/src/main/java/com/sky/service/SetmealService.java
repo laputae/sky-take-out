@@ -24,4 +24,17 @@ public interface SetmealService {
      */
     List<DishItemVO> getDishItemById(Long id);
 
+    /**
+     * 更新套餐
+     * @param setmealDTO
+     */
+    void update(SetmealDTO setmealDTO);
+
+    /**
+     * 新增套餐
+     * @param setmealDTO
+     * @return
+     */
+     void insert(SetmealDTO setmealDTO);
+
 }

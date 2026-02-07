@@ -17,4 +17,57 @@
             </if>
         </where>
     </select>
+    <update id="update" parameterType="com.sky.entity.Setmeal" >
+        update setmeal
+        <set>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="id !=null">
+                id = #{id},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+    </update>
+    <insert id="insert" parameterType="com.sky.entity.Setmeal" useGeneratedKeys="true" keyProperty="id">
+        insert into setmeal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">category_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="price != null">price,</if>
+            <if test="status != null">status,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="image != null and image != ''">image,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="updateUser != null">update_user,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="price != null">#{price},</if>
+            <if test="status != null">#{status},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="image != null and image != ''">#{image},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="updateUser != null">#{updateUser},</if>
+        </trim>
+    </insert>
 </mapper>
