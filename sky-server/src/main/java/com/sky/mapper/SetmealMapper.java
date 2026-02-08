@@ -10,6 +10,7 @@ import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -68,4 +69,12 @@ public interface SetmealMapper {
      */
     @Select("select * from setmeal")
     SetmealVO getById(Long id);
+
+    /**
+     * 设置套餐的起售停售状态
+     * @param setmeal
+     */
+    @AutoFill(value=OperationType.UPDATE)
+    @Update("update setmeal set status=#{status}, update_time=#{updateTime}, update_user=#{updateUser} where id=#{id}")
+    void updateStatus(Setmeal setmeal);
 }

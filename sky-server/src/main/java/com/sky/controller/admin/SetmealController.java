@@ -52,5 +52,12 @@ public class SetmealController {
         SetmealVO setmealVO=setmealService.getById(id);
         return Result.success(setmealVO);
     }
+    @PostMapping("status/{status}")
+    @ApiOperation("设置套餐起售停售")
+    public Result setStatus(Long id,@PathVariable Integer status){
+        log.info("套餐的id是: {}, 状态是: {}", id, (status == 1 ? "起售" : "停售"));
+        setmealService.updateStatus(id,status);
+        return Result.success();
+    }
 }
 
