@@ -6,12 +6,14 @@ import com.sky.entity.Setmeal;
 import com.sky.result.PageResult;
 import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
+
 import java.util.List;
 
 public interface SetmealService {
 
     /**
      * 条件查询
+     *
      * @param setmeal
      * @return
      */
@@ -19,6 +21,7 @@ public interface SetmealService {
 
     /**
      * 根据id查询菜品选项
+     *
      * @param id
      * @return
      */
@@ -26,19 +29,22 @@ public interface SetmealService {
 
     /**
      * 更新套餐
+     *
      * @param setmealDTO
      */
     void update(SetmealDTO setmealDTO);
 
     /**
      * 新增套餐
+     *
      * @param setmealDTO
      * @return
      */
-     void insert(SetmealDTO setmealDTO);
+    void insert(SetmealDTO setmealDTO);
 
     /**
      * 分页查询套餐
+     *
      * @param dto
      * @return
      */
@@ -46,10 +52,24 @@ public interface SetmealService {
 
     /**
      * 根据套餐id获取套餐
+     *
      * @param id
      * @return
      */
     SetmealVO getById(Long id);
 
+    /**
+     * 更新套餐的状态
+     * @param id
+     * @param status
+     * @return
+     */
     void updateStatus(Long id, Integer status);
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     * @return
+     */
+    void deleteBatch(List<Long> ids);
 }

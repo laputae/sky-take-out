@@ -1,5 +1,6 @@
 package com.sky.utils;
 
+import com.sky.constant.MessageConstant;
 import com.sky.properties.MinioProperties;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -52,8 +53,8 @@ public class MinioUtil {
             return requestUrl;
 
         } catch (Exception e) {
-            log.error("上传文件失败", e);
-            throw new RuntimeException("上传文件失败");
+            log.error(MessageConstant.UPLOAD_FAILED, e);
+            throw new RuntimeException(MessageConstant.UPLOAD_FAILED);
         }
     }
 }

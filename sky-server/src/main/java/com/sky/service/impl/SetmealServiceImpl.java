@@ -2,11 +2,13 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -112,8 +114,8 @@ public class SetmealServiceImpl implements SetmealService {
     public PageResult page(SetmealPageQueryDTO dto) {
         PageHelper.startPage(dto.getPage(), dto.getPageSize());
         Page<SetmealVO> pageResult = setmealMapper.page(dto);
-        for(SetmealVO setmealVO:pageResult){
-            List<SetmealDish> setmealDishes=setmealDishMapper.getSetmealDishById(setmealVO.getId());
+        for (SetmealVO setmealVO : pageResult) {
+            List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealDishById(setmealVO.getId());
             setmealVO.setSetmealDishes(setmealDishes);
         }
         return new PageResult(pageResult.getTotal(), pageResult.getResult());
@@ -126,12 +128,13 @@ public class SetmealServiceImpl implements SetmealService {
      * @return
      */
     @Override
-    public SetmealVO getById(Long id){
-        SetmealVO setmealVO=setmealMapper.getById(id);
+    public SetmealVO getById(Long id) {
+        SetmealVO setmealVO = setmealMapper.getById(id);
         List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealDishById(id);
         setmealVO.setSetmealDishes(setmealDishes);
         return setmealVO;
     }
+
     /**
      * 设置套餐的状态为起售或停售
      *
@@ -139,11 +142,38 @@ public class SetmealServiceImpl implements SetmealService {
      * @return
      */
     @Override
-    public void updateStatus(Long id, Integer status){
+    public void updateStatus(Long id, Integer status) {
+        List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealDishById(id);
+        for (SetmealDish setmealDish : setmealDishes) {
+            Integer dishStatus = dishMapper.getStatus(setmealDish.getDishId());
+            if (dishStatus == 0 && status == 1) {
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+            }
+        }
         Setmeal setmeal = Setmeal.builder()
                 .id(id)
                 .status(status)
                 .build();
         setmealMapper.updateStatus(setmeal);
+    }
+
+    /**
+     * 批量删除套餐
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public void deleteBatch(List<Long> ids) {
+        List<String> activeNames = setmealMapper.selectActiveNamesByIds(ids);
+
+        if (activeNames != null && !activeNames.isEmpty()) {
+            String names = String.join(", ", activeNames);
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE + ": " + names);
+        }
+        for (Long id : ids) {
+            setmealDishMapper.deleteBySetmealId(id);
+        }
+        setmealMapper.deleteBatch(ids);
     }
 }

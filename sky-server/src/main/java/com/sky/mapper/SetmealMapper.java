@@ -9,6 +9,7 @@ import com.sky.result.PageResult;
 import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -77,4 +78,17 @@ public interface SetmealMapper {
     @AutoFill(value=OperationType.UPDATE)
     @Update("update setmeal set status=#{status}, update_time=#{updateTime}, update_user=#{updateUser} where id=#{id}")
     void updateStatus(Setmeal setmeal);
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     */
+    void deleteBatch(@Param("ids") List<Long> ids);
+
+    /**
+     * 查询起售中的套餐
+     * @param ids
+     * @return
+     */
+    List<String> selectActiveNamesByIds(@Param("ids") List<Long> ids);
 }

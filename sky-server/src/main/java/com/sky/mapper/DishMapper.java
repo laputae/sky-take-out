@@ -78,4 +78,12 @@ public interface DishMapper {
      * @return
      */
     List<Dish> list(Dish dish);
+
+    /**
+     * 根据id查询菜品起售状态
+     * @param id
+     * @return Integer
+     */
+    @Select("select status from dish where id=#{id}")
+    Integer getStatus(Long id);
 }

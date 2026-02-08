@@ -87,4 +87,18 @@
         </where>
         order by setmeal.create_time desc
     </select>
+    <delete id="deleteBatch">
+        DELETE FROM setmeal
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectActiveNamesByIds" parameterType="java.util.List" resultType="java.lang.String">
+        select name from setmeal
+        where status = 1 and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>
