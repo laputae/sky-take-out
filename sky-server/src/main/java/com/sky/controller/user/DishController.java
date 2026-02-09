@@ -38,7 +38,7 @@ public class DishController {
         //构造redis中的key
         String redisKey = "dish_list_" + categoryId;
         List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(redisKey);
-        if(list!=null && list.size()>0){
+        if(list!=null && !list.isEmpty()){
             return Result.success(list);
         }
         //如果缓存中没有数据，则查询数据库

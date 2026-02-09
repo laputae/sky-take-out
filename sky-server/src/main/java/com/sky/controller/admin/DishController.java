@@ -98,8 +98,14 @@ public class DishController {
         return Result.success(dishService.getByCategoryId(categoryId));
     }
 
-    private void deleteRedisCache(String pattern){
+    /**
+     * 清理缓存数据
+     *
+     * @param pattern
+     */
+    private void deleteRedisCache(String pattern) {
         Set redisKeys = redisTemplate.keys(pattern);
         redisTemplate.delete(redisKeys);
     }
+
 }
