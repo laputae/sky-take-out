@@ -69,7 +69,7 @@ public interface SetmealMapper {
      * @return
      */
     @Select("select * from setmeal")
-    SetmealVO getById(Long id);
+    Setmeal getById(Long id);
 
     /**
      * 设置套餐的起售停售状态
