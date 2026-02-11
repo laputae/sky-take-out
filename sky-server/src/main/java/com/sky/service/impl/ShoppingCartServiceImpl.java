@@ -41,7 +41,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCart.setUserId(BaseContext.getCurrentId());
         //判断当前商品是否在购物车中
         List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
-        if (shoppingCartList != null && shoppingCartList.size() > 1) {
+        if (shoppingCartList != null && !shoppingCartList.isEmpty()) {
             shoppingCart = shoppingCartList.get(0);
             shoppingCart.setNumber(shoppingCart.getNumber() + 1);
             shoppingCartMapper.updateNumberById(shoppingCart);
@@ -71,7 +71,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void clean(Long userId){
+    public void clean(Long userId) {
         shoppingCartMapper.clean(userId);
+    }
+
+    @Override
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
+        if (shoppingCartList != null && !shoppingCartList.isEmpty()) {
+            shoppingCart = shoppingCartList.get(0);
+            Integer number = shoppingCart.getNumber();
+            if (number == 1) {
+                shoppingCartMapper.deleteById(shoppingCart.getId());
+            } else {
+                shoppingCart.setNumber(shoppingCart.getNumber() - 1);
+                shoppingCartMapper.updateNumberById(shoppingCart);
+            }
+        }
     }
 }

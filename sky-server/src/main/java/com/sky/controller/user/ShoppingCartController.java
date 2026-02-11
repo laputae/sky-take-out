@@ -42,9 +42,17 @@ public class ShoppingCartController {
 
     @DeleteMapping("/clean")
     @ApiOperation("清空购物车")
-    public Result clean(){
+    public Result clean() {
         log.info("清空购物车");
         shoppingCartService.clean(BaseContext.getCurrentId());
+        return Result.success();
+    }
+
+    @PostMapping("/sub")
+    @ApiOperation("删除购物车的单个菜品或套餐")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO) {
+        log.info("要删除的菜品或套餐是: {}", shoppingCartDTO);
+        shoppingCartService.sub(shoppingCartDTO);
         return Result.success();
     }
 }
