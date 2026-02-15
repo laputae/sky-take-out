@@ -176,8 +176,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        Page<OrderVO> page=orderMapper.page(ordersPageQueryDTO);
-        List<OrderVO> records = page.getResult();
+        Page<Orders> page=orderMapper.page(ordersPageQueryDTO);
+        List<Orders> records = page.getResult();
         List<OrderVO> orderVOList=new ArrayList<>();
         for(Orders orders: records){
             OrderVO orderVO=new OrderVO();
@@ -198,5 +198,10 @@ public class OrderServiceImpl implements OrderService {
             orderVOList.add(orderVO);
         }
         return new PageResult(page.getTotal(), orderVOList);
+    }
+
+    @Override
+    public void cancelOrder(Long id){
+        orderMapper.cancel(Orders.CANCELLED,id);
     }
 }

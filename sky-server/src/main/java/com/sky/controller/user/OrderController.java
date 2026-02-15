@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.DocumentationCache;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private DocumentationCache resourceGroupCache;
 
     /**
      * 用户下单
@@ -70,5 +73,13 @@ public class OrderController {
     public Result<PageResult> getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("用户查询历史订单: {}", ordersPageQueryDTO);
         return Result.success(orderService.getHistoryOrder(ordersPageQueryDTO));
+    }
+
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancelOrder(@PathVariable Long id){
+        log.info("取消的订单编号是: {}", id);
+        orderService.cancelOrder(id);
+        return Result.success();
     }
 }
