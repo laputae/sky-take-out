@@ -224,4 +224,31 @@ public class OrderServiceImpl implements OrderService {
         }).collect(Collectors.toList());
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
+
+    @Override
+    public PageResult search(OrdersPageQueryDTO ordersPageQueryDTO){
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.page(ordersPageQueryDTO);
+        List<Orders> records = page.getResult();
+        List<OrderVO> orderVOList=new ArrayList<>();
+        for(Orders orders: records){
+            OrderVO orderVO=new OrderVO();
+            BeanUtils.copyProperties(orders,orderVO);
+            List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
+            orderVO.setOrderDetailList(orderDetails);
+            StringBuilder orderDishes=new StringBuilder();
+            for(OrderDetail detail:orderDetails){
+                orderDishes.append(detail.getName())
+                        .append(" * ")
+                        .append(detail.getNumber())
+                        .append("份, ");
+            }
+            if(orderDishes.length()>0){
+                orderDishes.setLength(orderDishes.length() - 1);
+            }
+            orderVO.setOrderDishes(orderDishes.toString());
+            orderVOList.add(orderVO);
+        }
+        return new PageResult(page.getTotal(), orderVOList);
+    }
 }
