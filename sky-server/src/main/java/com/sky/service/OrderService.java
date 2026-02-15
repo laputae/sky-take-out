@@ -1,7 +1,10 @@
 package com.sky.service;
 
 import com.sky.dto.*;
+import com.sky.result.PageResult;
 import com.sky.vo.*;
+
+import java.util.List;
 
 public interface OrderService {
 
@@ -25,4 +28,7 @@ public interface OrderService {
      */
     void paySuccess(String outTradeNo);
 
+    OrderVO getOrderDetail(Long id);
+
+    PageResult getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO);
 }

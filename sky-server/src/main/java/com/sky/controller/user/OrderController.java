@@ -1,16 +1,21 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 订单
@@ -53,4 +58,17 @@ public class OrderController {
         return Result.success(orderPaymentVO);
     }
 
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("用户根据订单id查询订单详情")
+    public Result<OrderVO> getOrderDetail(@PathVariable Long id){
+        log.info("用户查询的订单id是: {}", id);
+        return Result.success(orderService.getOrderDetail(id));
+    }
+
+    @GetMapping("/historyOrders")
+    @ApiOperation("用户查询历史订单")
+    public Result<PageResult> getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
+        log.info("用户查询历史订单: {}", ordersPageQueryDTO);
+        return Result.success(orderService.getHistoryOrder(ordersPageQueryDTO));
+    }
 }

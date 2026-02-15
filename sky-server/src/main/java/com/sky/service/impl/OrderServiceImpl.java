@@ -1,6 +1,8 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.*;
@@ -9,10 +11,12 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
 
         //构造订单数据
         Orders order = new Orders();
-        BeanUtils.copyProperties(ordersSubmitDTO,order);
+        BeanUtils.copyProperties(ordersSubmitDTO, order);
         order.setPhone(addressBook.getPhone());
         order.setAddress(addressBook.getDetail());
         order.setConsignee(addressBook.getConsignee());
@@ -158,4 +162,41 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    //根据订单id获取订单详细数据
+    @Override
+    public OrderVO getOrderDetail(Long id) {
+        OrderVO orderVO = new OrderVO();
+        Orders orders = orderMapper.getById(id);
+        List<OrderDetail> orderDetails=orderDetailMapper.getByOrderId(id);
+        BeanUtils.copyProperties(orders,orderVO);
+        orderVO.setOrderDetailList(orderDetails);
+        return orderVO;
+    }
+
+    @Override
+    public PageResult getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<OrderVO> page=orderMapper.page(ordersPageQueryDTO);
+        List<OrderVO> records = page.getResult();
+        List<OrderVO> orderVOList=new ArrayList<>();
+        for(Orders orders: records){
+            OrderVO orderVO=new OrderVO();
+            BeanUtils.copyProperties(orders,orderVO);
+            List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
+            orderVO.setOrderDetailList(orderDetails);
+            StringBuilder orderDishes=new StringBuilder();
+            for(OrderDetail detail:orderDetails){
+                orderDishes.append(detail.getName())
+                        .append(" * ")
+                        .append(detail.getNumber())
+                        .append("份, ");
+            }
+            if(orderDishes.length()>0){
+                orderDishes.setLength(orderDishes.length() - 1);
+            }
+            orderVO.setOrderDishes(orderDishes.toString());
+            orderVOList.add(orderVO);
+        }
+        return new PageResult(page.getTotal(), orderVOList);
+    }
 }
