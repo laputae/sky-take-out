@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 订单
@@ -203,5 +204,24 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void cancelOrder(Long id){
         orderMapper.cancel(Orders.CANCELLED,id);
+    }
+    @Override
+    public void repetition(Long id){
+        Long userId=BaseContext.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            // 拷贝相同属性（name, image, dishId, setmealId, dishFlavor, number）
+            BeanUtils.copyProperties(x, shoppingCart);
+
+            shoppingCart.setUserId(userId);
+            shoppingCart.setCreateTime(LocalDateTime.now());
+
+            // 注意：这里不建议直接拷贝旧订单的金额 (x.getAmount())
+            // 虽然购物车显示时会查库获取最新价，但建议保持字段一致性
+            return shoppingCart;
+        }).collect(Collectors.toList());
+        shoppingCartMapper.insertBatch(shoppingCartList);
     }
 }

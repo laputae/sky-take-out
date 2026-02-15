@@ -27,11 +27,6 @@ public interface DishFlavorMapper {
      */
     void deleteBatchByDishId(@Param("ids")List<Long> ids);
 
-    /**
-     * 给口味设置菜品id
-     * @param dishId
-     */
-    void setDishId(Long dishId);
 
     /**
      * 批量插入口味数据

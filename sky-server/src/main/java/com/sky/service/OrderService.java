@@ -33,4 +33,6 @@ public interface OrderService {
     PageResult getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO);
 
     void cancelOrder(Long id);
+
+    void repetition(Long id);
 }

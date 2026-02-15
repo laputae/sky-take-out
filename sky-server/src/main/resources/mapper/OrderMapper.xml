@@ -60,6 +60,29 @@
         </where>
         order by order_time desc
     </select>
-
+    <update id="cancel">
+        update orders
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus},
+            </if>
+            <if test="checkoutTime != null">
+                checkout_time = #{checkoutTime},
+            </if>
+            <if test="cancelReason != null and cancelReason != ''">
+                cancel_reason = #{cancelReason},
+            </if>
+            <if test="rejectionReason != null and rejectionReason != ''">
+                rejection_reason = #{rejectionReason},
+            </if>
+            <if test="cancelTime != null">
+                cancel_time = #{cancelTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
 </mapper>
