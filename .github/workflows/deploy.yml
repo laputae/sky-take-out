@@ -120,6 +120,6 @@ jobs:
                 \"text\": \"### sky-take-out 部署通知\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.event.head_commit.message }}\n\n[🔍 点击查看详细日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n**@所有人**\"
               },
               \"at\": {
-                \"isAtAll\": true
+                \"isAtAll\": false
               }
             }"
