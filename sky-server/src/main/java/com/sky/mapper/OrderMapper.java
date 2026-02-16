@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
@@ -62,4 +63,7 @@ public interface OrderMapper {
      * @return
      */
     Integer getToBeConfirmedNum();
+
+    @Update("update orders set status=3 where id=#{id}")
+    void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
 }

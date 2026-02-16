@@ -81,9 +81,16 @@ public class OrderServiceImpl implements OrderService {
         order.setConsignee(addressBook.getConsignee());
         order.setNumber(String.valueOf(System.currentTimeMillis()));
         order.setUserId(userId);
-        order.setStatus(Orders.PENDING_PAYMENT);
-        order.setPayStatus(Orders.UN_PAID);
+        // 下单后直接成功，跳过支付环节（便于测试）
+        order.setStatus(Orders.TO_BE_CONFIRMED);  // 待接单（已支付状态）
+        order.setPayStatus(Orders.PAID);           // 已支付
+        order.setPayMethod(1);                     // 支付方式：微信
         order.setOrderTime(LocalDateTime.now());
+        order.setCheckoutTime(LocalDateTime.now()); // 结账时间
+        //为了测试支付成功的后续操作，先注释掉这个代码
+//        order.setStatus(Orders.PENDING_PAYMENT);
+//        order.setPayStatus(Orders.UN_PAID);
+//        order.setOrderTime(LocalDateTime.now());
 
         //向订单表插入1条数据
         orderMapper.insert(order);
@@ -121,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-        // 当前登录用户id
+/*        // 当前登录用户id
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
 
@@ -139,7 +146,32 @@ public class OrderServiceImpl implements OrderService {
 
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
+*/
+        // 根据订单号查询订单，下面是用来测试的代码，把支付状态设为成功
+        Orders ordersDB = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
 
+        if (ordersDB.getPayStatus() == Orders.PAID) {
+            throw new OrderBusinessException("该订单已支付");
+        }
+
+        // 直接更新订单状态为已支付（模拟支付成功）
+        Orders orders = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.TO_BE_CONFIRMED)   // 待接单
+                .payStatus(Orders.PAID)           // 已支付
+                .payMethod(ordersPaymentDTO.getPayMethod())  // 支付方式
+                .checkoutTime(LocalDateTime.now()) // 结账时间
+                .build();
+
+        orderMapper.update(orders);
+
+        // 返回模拟的支付成功VO
+        OrderPaymentVO vo = new OrderPaymentVO();
+        vo.setNonceStr("mockNonceStr");
+        vo.setPaySign("mockPaySign");
+        vo.setTimeStamp(String.valueOf(System.currentTimeMillis() / 1000));
+        vo.setSignType("RSA");
+        vo.setPackageStr("prepay_id=mock_prepay_id");
         return vo;
     }
 
@@ -266,4 +298,8 @@ public class OrderServiceImpl implements OrderService {
         return orderStatisticsVO;
     }
 
+    @Override
+    public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO){
+        orderMapper.confirmOrder(ordersConfirmDTO);
+    }
 }
