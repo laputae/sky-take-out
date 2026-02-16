@@ -37,4 +37,6 @@ public interface OrderService {
     void repetition(Long id);
 
     PageResult search(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    OrderStatisticsVO statistics();
 }

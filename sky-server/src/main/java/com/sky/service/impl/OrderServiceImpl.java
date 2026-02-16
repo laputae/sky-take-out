@@ -15,6 +15,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -168,8 +169,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderVO getOrderDetail(Long id) {
         OrderVO orderVO = new OrderVO();
         Orders orders = orderMapper.getById(id);
-        List<OrderDetail> orderDetails=orderDetailMapper.getByOrderId(id);
-        BeanUtils.copyProperties(orders,orderVO);
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(id);
+        BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetails);
         return orderVO;
     }
@@ -177,22 +178,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult getHistoryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        Page<Orders> page=orderMapper.page(ordersPageQueryDTO);
+        Page<Orders> page = orderMapper.page(ordersPageQueryDTO);
         List<Orders> records = page.getResult();
-        List<OrderVO> orderVOList=new ArrayList<>();
-        for(Orders orders: records){
-            OrderVO orderVO=new OrderVO();
-            BeanUtils.copyProperties(orders,orderVO);
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for (Orders orders : records) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(orders, orderVO);
             List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
             orderVO.setOrderDetailList(orderDetails);
-            StringBuilder orderDishes=new StringBuilder();
-            for(OrderDetail detail:orderDetails){
+            StringBuilder orderDishes = new StringBuilder();
+            for (OrderDetail detail : orderDetails) {
                 orderDishes.append(detail.getName())
                         .append(" * ")
                         .append(detail.getNumber())
                         .append("份, ");
             }
-            if(orderDishes.length()>0){
+            if (orderDishes.length() > 0) {
                 orderDishes.setLength(orderDishes.length() - 1);
             }
             orderVO.setOrderDishes(orderDishes.toString());
@@ -202,12 +203,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(Long id){
-        orderMapper.cancel(Orders.CANCELLED,id);
+    public void cancelOrder(Long id) {
+        orderMapper.cancel(Orders.CANCELLED, id);
     }
+
     @Override
-    public void repetition(Long id){
-        Long userId=BaseContext.getCurrentId();
+    public void repetition(Long id) {
+        Long userId = BaseContext.getCurrentId();
         shoppingCartMapper.deleteByUserId(userId);
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
@@ -226,24 +228,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PageResult search(OrdersPageQueryDTO ordersPageQueryDTO){
+    public PageResult search(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<Orders> page = orderMapper.page(ordersPageQueryDTO);
         List<Orders> records = page.getResult();
-        List<OrderVO> orderVOList=new ArrayList<>();
-        for(Orders orders: records){
-            OrderVO orderVO=new OrderVO();
-            BeanUtils.copyProperties(orders,orderVO);
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for (Orders orders : records) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(orders, orderVO);
             List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
             orderVO.setOrderDetailList(orderDetails);
-            StringBuilder orderDishes=new StringBuilder();
-            for(OrderDetail detail:orderDetails){
+            StringBuilder orderDishes = new StringBuilder();
+            for (OrderDetail detail : orderDetails) {
                 orderDishes.append(detail.getName())
                         .append(" * ")
                         .append(detail.getNumber())
                         .append("份, ");
             }
-            if(orderDishes.length()>0){
+            if (orderDishes.length() > 0) {
                 orderDishes.setLength(orderDishes.length() - 1);
             }
             orderVO.setOrderDishes(orderDishes.toString());
@@ -251,4 +253,17 @@ public class OrderServiceImpl implements OrderService {
         }
         return new PageResult(page.getTotal(), orderVOList);
     }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        Integer confirmedNum=orderMapper.getConfirmedOrderNum();
+        Integer deliveryInProgressNum=orderMapper.getDeliveryInProgressNum();
+        Integer toBeConfirmedNum=orderMapper.getToBeConfirmedNum();
+        OrderStatisticsVO orderStatisticsVO=new OrderStatisticsVO();
+        orderStatisticsVO.setConfirmed(confirmedNum);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgressNum);
+        orderStatisticsVO.setToBeConfirmed(toBeConfirmedNum);
+        return orderStatisticsVO;
+    }
+
 }

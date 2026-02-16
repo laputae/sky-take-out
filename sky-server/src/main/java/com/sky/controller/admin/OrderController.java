@@ -4,6 +4,7 @@ import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,5 +35,12 @@ public class OrderController {
     public Result<PageResult> search(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("搜索的订单是: {}", ordersPageQueryDTO);
         return Result.success(orderService.search(ordersPageQueryDTO));
+    }
+
+    @GetMapping("/statistics")
+    @ApiOperation("统计各个状态的订单数量")
+    public Result<OrderStatisticsVO> getStatistics(){
+        log.info("统计各个状态的订单数量");
+        return Result.success(orderService.statistics());
     }
 }

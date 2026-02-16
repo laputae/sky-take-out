@@ -44,4 +44,22 @@ public interface OrderMapper {
 
 
     void cancel(Integer status, Long id);
+
+    /**
+     * 获取待派送的订单数量
+     * @return
+     */
+    Integer getConfirmedOrderNum();
+
+    /**
+     * 获取派送中的订单数量
+     * @return
+     */
+    Integer getDeliveryInProgressNum();
+
+    /**
+     * 获取待接单数量
+     * @return
+     */
+    Integer getToBeConfirmedNum();
 }

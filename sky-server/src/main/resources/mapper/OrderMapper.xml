@@ -67,6 +67,17 @@
         </where>
         order by order_time desc
     </select>
+    <select id="getConfirmedOrderNum" resultType="java.lang.Integer">
+        select count(*) from orders where status=3;
+    </select>
+    <select id="getDeliveryInProgressNum" resultType="java.lang.Integer">
+        select count(*) from orders where status=4;
+    </select>
+    <select id="getToBeConfirmedNum" resultType="java.lang.Integer">
+        select count(*)
+        from orders
+        where status = 2;
+    </select>
     <update id="cancel">
         update orders
         <set>
