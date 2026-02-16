@@ -41,4 +41,6 @@ public interface OrderService {
     OrderStatisticsVO statistics();
 
     void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
+
+    void rejection(OrdersRejectionDTO ordersRejectionDTO);
 }

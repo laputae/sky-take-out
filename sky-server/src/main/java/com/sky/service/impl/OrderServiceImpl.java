@@ -302,4 +302,9 @@ public class OrderServiceImpl implements OrderService {
     public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO){
         orderMapper.confirmOrder(ordersConfirmDTO);
     }
+
+    @Override
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO){
+        orderMapper.rejection(ordersRejectionDTO);
+    }
 }

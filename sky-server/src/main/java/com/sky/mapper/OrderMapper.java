@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -66,4 +67,7 @@ public interface OrderMapper {
 
     @Update("update orders set status=3 where id=#{id}")
     void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
+
+    @Update("update orders set rejection_reason=#{rejectionReason} where id=#{id}")
+    void rejection(OrdersRejectionDTO ordersRejectionDTO);
 }
