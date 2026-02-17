@@ -72,6 +72,6 @@ public interface OrderMapper {
     @Update("update orders set rejection_reason=#{rejectionReason} where id=#{id}")
     void rejection(OrdersRejectionDTO ordersRejectionDTO);
 
-    @Update("update orders set cancel_reason=#{cancelReason} where id=#{id}")
+    @Update("update orders set cancel_reason=#{cancelReason}, status=6 where id=#{id}")
     void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
 }
