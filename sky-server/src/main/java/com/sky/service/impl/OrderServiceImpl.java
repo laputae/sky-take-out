@@ -304,7 +304,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void rejection(OrdersRejectionDTO ordersRejectionDTO){
+    public void rejectionOrder(OrdersRejectionDTO ordersRejectionDTO){
         orderMapper.rejection(ordersRejectionDTO);
     }
+
+    @Override
+    public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO){
+        orderMapper.adminCancelOrder(ordersCancelDTO);
+    }
+
 }

@@ -4,8 +4,6 @@ import com.sky.dto.*;
 import com.sky.result.PageResult;
 import com.sky.vo.*;
 
-import java.util.List;
-
 public interface OrderService {
 
     /**
@@ -42,5 +40,7 @@ public interface OrderService {
 
     void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
 
-    void rejection(OrdersRejectionDTO ordersRejectionDTO);
+    void rejectionOrder(OrdersRejectionDTO ordersRejectionDTO);
+
+    void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
 }
