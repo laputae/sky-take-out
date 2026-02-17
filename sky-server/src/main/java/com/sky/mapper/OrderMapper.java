@@ -6,7 +6,6 @@ import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersRejectionDTO;
 import com.sky.entity.Orders;
-import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -79,5 +78,7 @@ public interface OrderMapper {
     void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
 
     @Update("update orders set status=4 where id=#{id}")
-    void delivery(Long id);
+    void deliveryOrder(Long id);
+    @Update("update orders set status=5 where id=#{id}")
+    void completeOrder(Long id);
 }

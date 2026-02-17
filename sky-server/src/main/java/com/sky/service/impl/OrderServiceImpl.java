@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -288,10 +286,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderStatisticsVO statistics() {
-        Integer confirmedNum=orderMapper.getConfirmedOrderNum();
-        Integer deliveryInProgressNum=orderMapper.getDeliveryInProgressNum();
-        Integer toBeConfirmedNum=orderMapper.getToBeConfirmedNum();
-        OrderStatisticsVO orderStatisticsVO=new OrderStatisticsVO();
+        Integer confirmedNum = orderMapper.getConfirmedOrderNum();
+        Integer deliveryInProgressNum = orderMapper.getDeliveryInProgressNum();
+        Integer toBeConfirmedNum = orderMapper.getToBeConfirmedNum();
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
         orderStatisticsVO.setConfirmed(confirmedNum);
         orderStatisticsVO.setDeliveryInProgress(deliveryInProgressNum);
         orderStatisticsVO.setToBeConfirmed(toBeConfirmedNum);
@@ -299,22 +297,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO){
+    public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO) {
         orderMapper.confirmOrder(ordersConfirmDTO);
     }
 
     @Override
-    public void rejectionOrder(OrdersRejectionDTO ordersRejectionDTO){
+    public void rejectionOrder(OrdersRejectionDTO ordersRejectionDTO) {
         orderMapper.rejection(ordersRejectionDTO);
     }
 
     @Override
-    public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO){
+    public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO) {
         orderMapper.adminCancelOrder(ordersCancelDTO);
     }
+
     @Override
-    public void delivery(Long id){
-        orderMapper.delivery(id);
+    public void deliveryOrder(Long id) {
+        orderMapper.deliveryOrder(id);
+    }
+
+    @Override
+    public void completeOrder(Long id) {
+        orderMapper.completeOrder(id);
     }
 
 
