@@ -50,18 +50,21 @@ public interface OrderMapper {
 
     /**
      * 获取待派送的订单数量
+     *
      * @return
      */
     Integer getConfirmedOrderNum();
 
     /**
      * 获取派送中的订单数量
+     *
      * @return
      */
     Integer getDeliveryInProgressNum();
 
     /**
      * 获取待接单数量
+     *
      * @return
      */
     Integer getToBeConfirmedNum();
@@ -74,4 +77,7 @@ public interface OrderMapper {
 
     @Update("update orders set cancel_reason=#{cancelReason}, status=6 where id=#{id}")
     void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
+
+    @Update("update orders set status=4 where id=#{id}")
+    void delivery(Long id);
 }

@@ -312,5 +312,10 @@ public class OrderServiceImpl implements OrderService {
     public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO){
         orderMapper.adminCancelOrder(ordersCancelDTO);
     }
+    @Override
+    public void delivery(Long id){
+        orderMapper.delivery(id);
+    }
+
 
 }
