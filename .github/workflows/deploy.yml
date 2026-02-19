@@ -67,8 +67,8 @@ jobs:
             
             # 将 scp 传过来的文件移动到正式部署目录
             mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
-            # 同时也把 docker-compose.yml 移动过去（如果你在项目中管理它）
-            # mv $TEMP_DIR/docker-compose.yml $DEPLOY_DIR/ 
+            # 同时也把 docker compose.yml 移动过去（如果你在项目中管理它）
+            # mv $TEMP_DIR/docker compose.yml $DEPLOY_DIR/ 
             mv $TEMP_DIR/sky-server/target/*.jar $DEPLOY_DIR/sky-server/target/app.jar
             rm -rf $TEMP_DIR
             
@@ -78,9 +78,9 @@ jobs:
             docker build -t $APP_NAME:local .
             
             echo "--- 4. 启动容器集群 (MySQL + App) ---"
-            # 使用 docker-compose 启动。-d 表示后台运行。
+            # 使用 docker compose 启动。-d 表示后台运行。
             # 它会自动处理 MySQL 的持久化挂载
-            docker-compose up -d
+            docker compose up -d
             
             echo "✅ 部署脚本执行完毕"
 
