@@ -50,33 +50,36 @@ jobs:
           # 设置超时时间，防止网络卡死导致的无限等待
           command_timeout: 30m
           script: |
-            # ▼▼▼ 核心：一旦任何命令出错（如构建失败），立即停止脚本并报错 ▼▼▼
             set -e
-
+            
             APP_NAME="sky-take-out"
             DEPLOY_DIR="/root/sky-deploy"
             TEMP_DIR="/root/sky_temp_deploy"
             
-            echo "--- 1. 整理文件结构 ---"
+            echo "--- 1. 准备持久化目录 ---"
+            # 确保宿主机上有存放数据库文件的目录，防止数据丢失
+            mkdir -p /root/mysql/data
+            
+            echo "--- 2. 整理文件结构 ---"
+            # 先清理旧的部署目录并重新创建
             rm -rf $DEPLOY_DIR
             mkdir -p $DEPLOY_DIR/sky-server/target
+            
+            # 将 scp 传过来的文件移动到正式部署目录
             mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
+            # 同时也把 docker-compose.yml 移动过去（如果你在项目中管理它）
+            # mv $TEMP_DIR/docker-compose.yml $DEPLOY_DIR/ 
             mv $TEMP_DIR/sky-server/target/*.jar $DEPLOY_DIR/sky-server/target/app.jar
             rm -rf $TEMP_DIR
             
-            echo "--- 2. 开始构建镜像 ---"
+            echo "--- 3. 开始构建应用镜像 ---"
             cd $DEPLOY_DIR
-            
-            # 清理旧容器（加 || true 防止因容器不存在而报错停止）
-            docker stop $APP_NAME || true
-            docker rm $APP_NAME || true
-            docker rmi $APP_NAME:local || true
-            
-            # 构建镜像 (如果不成功，set -e 会让脚本在这里直接退出，触发 Failure 状态)
-            # 这里去掉了 sed 命令，直接使用你服务器配置好的镜像源
+            # 构建新的镜像
             docker build -t $APP_NAME:local .
             
-            echo "--- 3. 启动容器集群 ---"
+            echo "--- 4. 启动容器集群 (MySQL + App) ---"
+            # 使用 docker-compose 启动。-d 表示后台运行。
+            # 它会自动处理 MySQL 的持久化挂载
             docker-compose up -d
             
             echo "✅ 部署脚本执行完毕"
