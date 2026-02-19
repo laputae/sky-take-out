@@ -1,4 +1,4 @@
-name: Deploy sky-take-out (Fast Mode)
+name: Deploy sky-take-out (Source Build Mode)
 
 on:
   push:
@@ -11,30 +11,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
-
-      # 1. 传输文件
-      - name: Copy Jar and Dockerfile to Server
+      # 1. 直接传源码，速度最快
+      - name: Copy Source to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_SSH_KEY }}
-          source: "sky-server/target/*.jar,Dockerfile,docker-compose.yml"
-          target: "/root/sky_temp_deploy"
-          strip_components: 0
+          source: "./*"
+          target: "/root/sky-source"
 
-      # 2. 远程构建 (遇到错误会立即中断)
-      - name: Build and Restart Docker on Server
-        id: build-step  # 给步骤个ID，方便后续引用（虽然这里主要靠 job.status）
+      # 2. 在服务器上编译并运行
+      - name: Build and Run on Server
         uses: appleboy/ssh-action@master
         env:
           MY_DB_USER: ${{ secrets.DB_USERNAME }}
@@ -47,71 +35,30 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_SSH_KEY }}
           envs: MY_DB_USER,MY_DB_PASS,MY_REDIS_PASS,WECHAT_APPID,WECHAT_SECRET
-          # 设置超时时间，防止网络卡死导致的无限等待
-          command_timeout: 30m
           script: |
             set -e
+            cd /root/sky-source
             
-            APP_NAME="sky-take-out"
-            DEPLOY_DIR="/root/sky-deploy"
-            TEMP_DIR="/root/sky_temp_deploy"
+            echo "--- 1. 服务器本地编译 ---"
+            mvn clean package -DskipTests
             
-            echo "--- 1. 准备持久化目录 ---"
-           
+            echo "--- 2. 查找 JAR 包 ---"
+            # 自动定位生成的 jar 文件
+            APP_JAR=$(find sky-server/target -name "sky-server-*.jar" | head -n 1)
             
-            echo "--- 2. 整理文件结构 ---"
-            # 先清理旧的部署目录并重新创建
-            rm -rf $DEPLOY_DIR
-            mkdir -p $DEPLOY_DIR/sky-server/target
+            echo "--- 3. 停止旧 Java 进程 ---"
+            # 根据端口 8080 杀进程，比杀名字更准
+            fuser -k 8080/tcp || true
             
-            # 确保将 docker-compose.yml 移动到部署目录
-            mv $TEMP_DIR/docker-compose.yml $DEPLOY_DIR/ 
-            mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
-            mv $TEMP_DIR/sky-server/target/*.jar $DEPLOY_DIR/sky-server/target/app.jar
-            rm -rf $TEMP_DIR
+            echo "--- 4. 启动新程序 ---"
+            # 注入所有环境变量并指定 prod 环境
+            nohup java -Xms512m -Xmx1024m \
+              -Dspring.profiles.active=prod \
+              -Dspring.datasource.druid.username=$MY_DB_USER \
+              -Dspring.datasource.druid.password=$MY_DB_PASS \
+              -DMY_REDIS_PASS=$MY_REDIS_PASS \
+              -DWECHAT_APPID=$WECHAT_APPID \
+              -DWECHAT_SECRET=$WECHAT_SECRET \
+              -jar $APP_JAR > /root/sky-app.log 2>&1 &
             
-            echo "--- 3. 开始构建应用镜像 ---"
-            cd $DEPLOY_DIR
-            # 构建新的镜像
-            docker build -t $APP_NAME:local .
-            
-            echo "--- 4. 启动容器集群 (App) ---"
-            cd $DEPLOY_DIR
-            
-            # 修正点2：优先尝试带横杠的 docker-compose，如果不通则用新版插件
-            if command -v docker-compose &> /dev/null; then
-                docker-compose up -d
-            else
-                docker compose up -d
-            fi
-            
-            echo "✅ 部署脚本执行完毕"
-
-      # 3. 钉钉通知 (无论成功还是失败都会发送)
-      - name: 发送钉钉通知
-        if: always()  # <--- 重要：确保即使上面步骤失败了，这一步也会执行
-        run: |
-          # 根据任务状态判断发送什么表情和文字
-          if [ "${{ job.status }}" == "success" ]; then
-            STATUS_EMOJI="✅ 构建成功"
-            COLOR_CODE="#00FF00" # 绿色看起来心情好
-          else
-            STATUS_EMOJI="❌ 构建失败 (请检查日志)"
-            COLOR_CODE="#FF0000" # 红色警示
-          fi
-          
-          DING_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DING_TOKEN }}"
-          
-          # 发送 Markdown 消息
-          curl "$DING_URL" \
-            -H 'Content-Type: application/json' \
-            -d "{
-              \"msgtype\": \"markdown\",
-              \"markdown\": {
-                \"title\": \"GitHub Action 通知\",
-                \"text\": \"### sky-take-out 部署通知\n\n**状态**: ${STATUS_EMOJI}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.event.head_commit.message }}\n\n[🔍 点击查看详细日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n****\"
-              },
-              \"at\": {
-                \"isAtAll\": false
-              }
-            }"
+            echo "✅ 部署成功，日志位于 /root/sky-app.log"

@@ -2,7 +2,7 @@ spring:
   datasource:
     druid:
       # 生产环境可能不需要 allowPublicKeyRetrieval=true，或者参数不同，分开写更灵活
-      url: jdbc:mysql://127.0.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=true
+      url: jdbc:mysql://127.0.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
       username: ${MY_DB_USER}
       password: ${MY_DB_PASS}
   redis:
@@ -13,7 +13,7 @@ spring:
 
 sky:
   minio:
-    endpoint: http://1.94.238.104:9000 # 生产环境必须是公网IP/域名
+    endpoint: http://127.0.0.1:9000 # 生产环境必须是公网IP/域名
     access-key: admin
     secret-key: ggbondyingxiong
     bucket-name: sky-take-out
