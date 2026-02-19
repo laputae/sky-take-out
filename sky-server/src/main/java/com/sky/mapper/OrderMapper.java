@@ -61,28 +61,17 @@ public interface OrderMapper {
      */
     Integer getToBeConfirmedNum();
 
-    @Update("update orders set status=3 where id=#{id}")
-    void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
-
-    @Update("update orders set rejection_reason=#{rejectionReason} where id=#{id}")
-    void rejection(OrdersRejectionDTO ordersRejectionDTO);
-
-    @Update("update orders set cancel_reason=#{cancelReason}, status=6 where id=#{id}")
-    void adminCancelOrder(OrdersCancelDTO ordersCancelDTO);
-
-    @Update("update orders set status=4 where id=#{id}")
-    void deliveryOrder(Long id);
-    @Update("update orders set status=5 where id=#{id}")
-    void completeOrder(Long id);
 
     /**
      * 分页条件查询并按下单时间排序
+     *
      * @param ordersPageQueryDTO
      */
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
      * 根据id查询订单
+     *
      * @param id
      */
     @Select("select * from orders where id=#{id}")
@@ -90,6 +79,7 @@ public interface OrderMapper {
 
     /**
      * 根据状态统计订单数量
+     *
      * @param status
      */
     @Select("select count(id) from orders where status = #{status}")

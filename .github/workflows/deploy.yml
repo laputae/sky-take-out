@@ -76,22 +76,8 @@ jobs:
             # 这里去掉了 sed 命令，直接使用你服务器配置好的镜像源
             docker build -t $APP_NAME:local .
             
-            echo "--- 3. 启动新容器 ---"
-            docker run -d \
-              --name $APP_NAME \
-              --restart always \
-              --network host \
-              -v /dev/urandom:/dev/random \
-              -v /root/sky-logs:/tmp/sky-logs \
-              -e TZ=Asia/Shanghai \
-              -e "SPRING_PROFILES_ACTIVE=prod" \
-              -e "logging.file.path=/tmp/sky-logs" \
-              -e "MY_DB_USER=$MY_DB_USER" \
-              -e "MY_DB_PASS=$MY_DB_PASS" \
-              -e "MY_REDIS_PASS=$MY_REDIS_PASS" \
-              -e "WECHAT_APPID=$WECHAT_APPID" \
-              -e "WECHAT_SECRET=$WECHAT_SECRET" \
-              $APP_NAME:local
+            echo "--- 3. 启动容器集群 ---"
+            docker-compose up -d
             
             echo "✅ 部署脚本执行完毕"
 
