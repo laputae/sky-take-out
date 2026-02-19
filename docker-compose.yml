@@ -16,8 +16,7 @@ services:
     image: sky-take-out:local
     container_name: sky-take-out
     restart: always
-    depends_on:
-      - mysql
+
     network_mode: host # 保持你原来的 host 模式
     environment:
       - SPRING_PROFILES_ACTIVE=prod

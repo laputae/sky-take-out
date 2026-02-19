@@ -57,8 +57,7 @@ jobs:
             TEMP_DIR="/root/sky_temp_deploy"
             
             echo "--- 1. 准备持久化目录 ---"
-            # 确保宿主机上有存放数据库文件的目录，防止数据丢失
-            mkdir -p /root/mysql/data
+           
             
             echo "--- 2. 整理文件结构 ---"
             # 先清理旧的部署目录并重新创建
@@ -76,7 +75,7 @@ jobs:
             # 构建新的镜像
             docker build -t $APP_NAME:local .
             
-            echo "--- 4. 启动容器集群 (MySQL + App) ---"
+            echo "--- 4. 启动容器集群 (App) ---"
             cd $DEPLOY_DIR
             
             # 修正点2：优先尝试带横杠的 docker-compose，如果不通则用新版插件
