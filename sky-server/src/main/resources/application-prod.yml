@@ -2,7 +2,7 @@ spring:
   datasource:
     druid:
       # 生产环境可能不需要 allowPublicKeyRetrieval=true，或者参数不同，分开写更灵活
-      url: jdbc:mysql://127.0.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://127.0.0.1:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=true
       username: ${MY_DB_USER}
       password: ${MY_DB_PASS}
   redis:
