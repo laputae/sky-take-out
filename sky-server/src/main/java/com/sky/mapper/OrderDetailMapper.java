@@ -11,11 +11,12 @@ public interface OrderDetailMapper {
 
     void insertBatch(List<OrderDetail> orderDetailList);
 
+
     /**
-     * 根据订单id获取订单详细数据
-     * @param OrderId
+     * 根据订单id查询订单明细
+     * @param orderId
      * @return
      */
-    @Select("select * from order_detail where order_id=#{OrderId}")
-    List<OrderDetail> getByOrderId(Long OrderId);
+    @Select("select * from order_detail where order_id = #{orderId}")
+    List<OrderDetail> getByOrderId(Long orderId);
 }
