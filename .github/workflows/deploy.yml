@@ -65,8 +65,6 @@ jobs:
             rm -rf $DEPLOY_DIR
             mkdir -p $DEPLOY_DIR/sky-server/target
             
-            # 将 scp 传过来的文件移动到正式部署目录
-            mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
             # 确保将 docker-compose.yml 移动到部署目录
             mv $TEMP_DIR/docker-compose.yml $DEPLOY_DIR/ 
             mv $TEMP_DIR/Dockerfile $DEPLOY_DIR/
