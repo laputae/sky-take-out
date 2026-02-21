@@ -135,14 +135,17 @@ public class ReportServiceImpl implements ReportService {
         for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-            Integer tempTotalOrderCount = getTotalOrderCount(beginTime, endTime);
-            Integer tempValidOrderCount = getValidOrderCount(beginTime, endTime);
+            Integer tempTotalOrderCount = getOrderCount(beginTime, endTime,null);
+            Integer tempValidOrderCount = getOrderCount(beginTime, endTime,Orders.COMPLETED);
             totalOrderCountList.add(tempTotalOrderCount);
             validOrderCountList.add(tempValidOrderCount);
             totalOrderCount=totalOrderCount+tempTotalOrderCount;
             validOrderCount=validOrderCount+tempValidOrderCount;
         }
-        Double orderCompletionRate = 1.0*validOrderCount/totalOrderCount;
+        Double orderCompletionRate =0.0;
+        if(totalOrderCount!=0) {
+            orderCompletionRate=1.0 * validOrderCount / totalOrderCount;
+        }
         return OrderReportVO.builder()
                 .dateList(StringUtils.join(dateList,","))
                 .orderCountList(StringUtils.join(totalOrderCountList,","))
@@ -153,19 +156,11 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    private Integer getTotalOrderCount(LocalDateTime begin, LocalDateTime end) {
+    private Integer getOrderCount(LocalDateTime begin, LocalDateTime end, Integer status) {
         Map map = new HashMap();
         map.put("begin", begin);
         map.put("end", end);
-        map.put("status", null);
-        return orderMapper.getOrderCount(map);
-    }
-
-    private Integer getValidOrderCount(LocalDateTime begin, LocalDateTime end) {
-        Map map = new HashMap();
-        map.put("begin", begin);
-        map.put("end", end);
-        map.put("status",5);
+        map.put("status",status);
         return orderMapper.getOrderCount(map);
     }
 }
