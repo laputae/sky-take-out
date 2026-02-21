@@ -30,6 +30,7 @@ mybatis:
 logging:
   level:
     com.sky: info
+    com.sky.mapper: debug
 
 # 纯业务配置保留在 sky 下
 sky:
