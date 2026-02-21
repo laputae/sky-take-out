@@ -29,7 +29,7 @@ public class CategoryController {
     @GetMapping("/list")
     @ApiOperation("查询分类")
     public Result<List<Category>> list(Integer type) {
-        log.info("擦查询的分类是: {}", type);
+        log.info("查询的分类是: {}", type);
         List<Category> list = categoryService.list(type);
         return Result.success(list);
     }
