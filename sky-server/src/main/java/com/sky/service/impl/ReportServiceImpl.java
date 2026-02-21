@@ -129,8 +129,6 @@ public class ReportServiceImpl implements ReportService {
         }
         List<Integer> totalOrderCountList = new ArrayList<>();
         List<Integer> validOrderCountList = new ArrayList<>();
-        Integer totalOrderCount = 0;
-        Integer validOrderCount = 0;
 
         for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
@@ -139,9 +137,11 @@ public class ReportServiceImpl implements ReportService {
             Integer tempValidOrderCount = getOrderCount(beginTime, endTime,Orders.COMPLETED);
             totalOrderCountList.add(tempTotalOrderCount);
             validOrderCountList.add(tempValidOrderCount);
-            totalOrderCount=totalOrderCount+tempTotalOrderCount;
-            validOrderCount=validOrderCount+tempValidOrderCount;
         }
+        //时间区间内的总订单数
+        Integer totalOrderCount = totalOrderCountList.stream().reduce(Integer::sum).get();
+        //时间区间内的总有效订单数
+        Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
         Double orderCompletionRate =0.0;
         if(totalOrderCount!=0) {
             orderCompletionRate=1.0 * validOrderCount / totalOrderCount;
