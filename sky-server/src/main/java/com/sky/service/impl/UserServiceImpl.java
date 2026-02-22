@@ -14,6 +14,7 @@ import com.sky.service.UserService;
 import com.sky.utils.HttpClientUtil;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.UserLoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 @Service
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     UserMapper userMapper;
@@ -47,7 +49,6 @@ public class UserServiceImpl implements UserService {
                     .build();
             userMapper.insert(user);
         }
-//        User user = userMapper.login(openid);
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
@@ -56,6 +57,7 @@ public class UserServiceImpl implements UserService {
                 .openid(user.getOpenid())
                 .token(token)
                 .build();
+        log.info("userLoginVO: {}", userLoginVO);
         return userLoginVO;
     }
 
@@ -68,6 +70,7 @@ public class UserServiceImpl implements UserService {
         String json = HttpClientUtil.doGet(WX_LOGIN, map);
         JSONObject jsonObject = JSON.parseObject(json);
         String openid = jsonObject.getString("openid");
+        log.info("openid: {}", openid);
         return openid;
     }
 }
