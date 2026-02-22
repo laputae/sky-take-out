@@ -14,19 +14,23 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SetmealMapper {
 
     /**
      * 根据分类id查询套餐的数量
+     *
      * @param id
      * @return
      */
     @Select("select count(id) from setmeal where category_id = #{categoryId}")
     Integer countByCategoryId(Long id);
+
     /**
      * 动态条件查询套餐
+     *
      * @param setmeal
      * @return
      */
@@ -34,6 +38,7 @@ public interface SetmealMapper {
 
     /**
      * 根据套餐id查询菜品选项
+     *
      * @param setmealId
      * @return
      */
@@ -44,6 +49,7 @@ public interface SetmealMapper {
 
     /**
      * 更新套餐信息
+     *
      * @param setmeal
      * @return
      */
@@ -51,6 +57,7 @@ public interface SetmealMapper {
 
     /**
      * 新增套餐
+     *
      * @param setmeal
      */
     @AutoFill(value = OperationType.INSERT)
@@ -58,6 +65,7 @@ public interface SetmealMapper {
 
     /**
      * 分页查询套餐
+     *
      * @param dto
      * @return
      */
@@ -65,6 +73,7 @@ public interface SetmealMapper {
 
     /**
      * 根据套餐id查询套餐
+     *
      * @param id
      * @return
      */
@@ -73,22 +82,33 @@ public interface SetmealMapper {
 
     /**
      * 设置套餐的起售停售状态
+     *
      * @param setmeal
      */
-    @AutoFill(value=OperationType.UPDATE)
+    @AutoFill(value = OperationType.UPDATE)
     @Update("update setmeal set status=#{status}, update_time=#{updateTime}, update_user=#{updateUser} where id=#{id}")
     void updateStatus(Setmeal setmeal);
 
     /**
      * 批量删除套餐
+     *
      * @param ids
      */
     void deleteBatch(@Param("ids") List<Long> ids);
 
     /**
      * 查询起售中的套餐
+     *
      * @param ids
      * @return
      */
     List<String> selectActiveNamesByIds(@Param("ids") List<Long> ids);
+
+    /**
+     * 根据条件统计套餐数量
+     *
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }

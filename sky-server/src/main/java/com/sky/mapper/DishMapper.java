@@ -9,6 +9,7 @@ import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DishMapper {
@@ -58,16 +59,34 @@ public interface DishMapper {
 
     /**
      * 批量删除菜品
+     *
      * @param ids
      */
-    void deleteBatchById(@Param("ids")List<Long> ids);
+    void deleteBatchById(@Param("ids") List<Long> ids);
 
+    /**
+     * 更新菜品
+     *
+     * @param dish
+     */
     @AutoFill(value = OperationType.UPDATE)
     void update(Dish dish);
 
+    /**
+     * 根据id查询菜品
+     *
+     * @param id
+     * @return
+     */
     @Select("select * from dish where id=#{id}")
     Dish getById(Long id);
 
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
     @Select("select * from dish where category_id=#{categoryId}")
     List<Dish> getByCategoryId(Long categoryId);
 
@@ -81,9 +100,18 @@ public interface DishMapper {
 
     /**
      * 根据id查询菜品起售状态
+     *
      * @param id
      * @return Integer
      */
     @Select("select status from dish where id=#{id}")
     Integer getStatus(Long id);
+
+    /**
+     * 根据条件统计菜品数量
+     *
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
