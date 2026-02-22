@@ -25,5 +25,12 @@ public interface ReportService {
      */
     UserReportVO getUserStatistics(LocalDate begin, LocalDate end);
 
+    /**
+     * 订单数据统计
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
     OrderReportVO getOrdersStatistics(LocalDate begin, LocalDate end);
 }

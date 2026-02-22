@@ -54,7 +54,13 @@ public class ReportController {
         return Result.success(reportService.getUserStatistics(begin, end));
     }
 
-
+    /**
+     * 订单数据统计
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
     @GetMapping("/ordersStatistics")
     @ApiOperation("订单统计接口")
     public Result<OrderReportVO> ordersStatistics(
@@ -62,4 +68,6 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         return Result.success(reportService.getOrdersStatistics(begin, end));
     }
+
+
 }

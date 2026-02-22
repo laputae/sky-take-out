@@ -119,6 +119,13 @@ public class ReportServiceImpl implements ReportService {
         return userMapper.countByMap(map);
     }
 
+    /**
+     * 订单数据统计
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
     @Override
     public OrderReportVO getOrdersStatistics(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();
@@ -133,8 +140,8 @@ public class ReportServiceImpl implements ReportService {
         for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-            Integer tempTotalOrderCount = getOrderCount(beginTime, endTime,null);
-            Integer tempValidOrderCount = getOrderCount(beginTime, endTime,Orders.COMPLETED);
+            Integer tempTotalOrderCount = getOrderCount(beginTime, endTime, null);
+            Integer tempValidOrderCount = getOrderCount(beginTime, endTime, Orders.COMPLETED);
             totalOrderCountList.add(tempTotalOrderCount);
             validOrderCountList.add(tempValidOrderCount);
         }
@@ -142,14 +149,14 @@ public class ReportServiceImpl implements ReportService {
         Integer totalOrderCount = totalOrderCountList.stream().reduce(Integer::sum).get();
         //时间区间内的总有效订单数
         Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
-        Double orderCompletionRate =0.0;
-        if(totalOrderCount!=0) {
-            orderCompletionRate=1.0 * validOrderCount / totalOrderCount;
+        Double orderCompletionRate = 0.0;
+        if (totalOrderCount != 0) {
+            orderCompletionRate = 1.0 * validOrderCount / totalOrderCount;
         }
         return OrderReportVO.builder()
-                .dateList(StringUtils.join(dateList,","))
-                .orderCountList(StringUtils.join(totalOrderCountList,","))
-                .validOrderCountList(StringUtils.join(validOrderCountList,","))
+                .dateList(StringUtils.join(dateList, ","))
+                .orderCountList(StringUtils.join(totalOrderCountList, ","))
+                .validOrderCountList(StringUtils.join(validOrderCountList, ","))
                 .totalOrderCount(totalOrderCount)
                 .validOrderCount(validOrderCount)
                 .orderCompletionRate(orderCompletionRate)
@@ -160,7 +167,7 @@ public class ReportServiceImpl implements ReportService {
         Map map = new HashMap();
         map.put("begin", begin);
         map.put("end", end);
-        map.put("status",status);
+        map.put("status", status);
         return orderMapper.getOrderCount(map);
     }
 }

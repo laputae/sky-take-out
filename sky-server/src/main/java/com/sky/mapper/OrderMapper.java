@@ -98,14 +98,28 @@ public interface OrderMapper {
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getByStatusAndOrdertimeLT(Integer status, LocalDateTime orderTime);
 
+    /**
+     * 根据订单号和用户id查询套餐
+     *
+     * @param outTradeNo
+     * @param userId
+     * @return
+     */
     @Select("select * from orders where number=#{outTrade} and user_id=#{userId}")
     Orders getByNumberAndUserId(String outTradeNo, Long userId);
 
     /**
      * 根据动态条件统计营业额
+     *
      * @param map
      */
     Double sumByMap(Map map);
 
+    /**
+     * 根据条件动态统计订单数据
+     *
+     * @param map
+     * @return
+     */
     Integer getOrderCount(Map map);
 }
