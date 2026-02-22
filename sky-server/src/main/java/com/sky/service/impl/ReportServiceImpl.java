@@ -1,7 +1,9 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.mapper.UserMapper;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang.StringUtils;
 import com.sky.entity.Orders;
@@ -87,6 +89,7 @@ public class ReportServiceImpl implements ReportService {
      * @param end
      * @return
      */
+    @Override
     public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();
         dateList.add(begin);
@@ -169,5 +172,25 @@ public class ReportServiceImpl implements ReportService {
         map.put("end", end);
         map.put("status", status);
         return orderMapper.getOrderCount(map);
+    }
+
+    /**
+     * 查询商品销量排名
+     *
+     * @param begin
+     * @param end
+     */
+    @Override
+    public SalesTop10ReportVO getTop10(LocalDate begin, LocalDate end) {
+
+            LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+            List<GoodsSalesDTO> goodsSalesDTOList = orderMapper.getTop10(beginTime, endTime);
+            String nameList=StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getName).toArray(),",");
+            String numList=StringUtils.join(goodsSalesDTOList.stream().map(GoodsSalesDTO::getNumber).toArray(),",");
+        return SalesTop10ReportVO.builder()
+                .nameList(nameList)
+                .numberList(numList)
+                .build();
     }
 }
