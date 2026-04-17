@@ -61,4 +61,4 @@ jobs:
               -DWECHAT_SECRET=$WECHAT_SECRET \
               -jar $APP_JAR > /root/sky-app.log 2>&1 &
             
-            echo "✅ 部署成功，日志位于 /root/sky-app.log"
+            echo " 部署成功，日志位于 /root/sky-app.log"
